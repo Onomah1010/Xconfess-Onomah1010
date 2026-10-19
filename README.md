@@ -361,6 +361,7 @@ When adding a new API endpoint, follow the [API endpoint contributor checklist](
 
 - [Account Recovery Guide](docs/account-recovery.md) — What to do if you connect the wrong wallet or network
 - [Contributor Guide](docs/CONTRIBUTOR_GUIDE.md) — Local setup, branch hygiene, PR expectations, and validation commands
+- [Data Export Retention & Deletion](docs/data-export-retention.md) — Export generation, download expiry, cooldown periods, and scheduled cleanup
 
 ## Package Docs
 - `xconfess-backend/README.md`
