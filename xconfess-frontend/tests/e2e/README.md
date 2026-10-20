@@ -46,6 +46,38 @@ Playwright starts the Next.js dev server on port 3000 (see `playwright.config.ts
 
 Run the same command in your pipeline after `npm ci`. Full browser matrix tests live in other `tests/e2e` specs; smoke uses the `smoke` project (desktop Chromium only).
 
+## Accessibility smoke
+
+The axe-core accessibility smoke suite scans the public home page, login page,
+and authenticated admin dashboard. It uses local API fixtures only (including
+a fake `example.com` test account); no live service or credentials are needed.
+Critical and serious axe-core violations fail the run.
+
+From the repository root:
+
+```bash
+npm ci
+npx playwright install chromium
+npm run frontend:test:a11y
+```
+
+Or from `xconfess-frontend/` after installing the browser:
+
+```bash
+npx playwright test tests/e2e/accessibility-smoke.spec.ts --project=smoke
+```
+
+Playwright starts the frontend on port 3000. On failure, the assertion lists the
+axe rule, impact, and affected selectors; use those selectors to locate the
+markup and reproduce the issue in a browser. The run also retains Playwright's
+failure trace as configured in `playwright.config.ts`.
+
+There are no accepted critical or serious exceptions currently. Do not suppress
+a violation broadly: if a temporary exception is approved, record its route,
+axe rule, affected selector, rationale, owner, tracking issue, and remediation
+date in the root `A11Y_CHECKLIST.md`. Keep any test exclusion limited to that
+documented route/rule/selector, and remove it when the fix ships.
+
 ## Wave 5 seeded demo journey
 
 `wave-demo-journey.spec.ts` exercises the demo path with mocked browser data:

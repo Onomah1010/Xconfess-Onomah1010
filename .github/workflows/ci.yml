@@ -105,6 +105,8 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm install --global npm@10.9.3
       - run: npm ci --include=optional --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run frontend:test:a11y
       - run: npm run ci:apps
 
   contracts:
