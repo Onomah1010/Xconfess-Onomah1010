@@ -42,6 +42,45 @@ jobs:
       - run: ./scripts/secret-scanning-preflight.sh --self-test
       - run: ./scripts/secret-scanning-preflight.sh
 
+  migration-smoke:
+    name: Database / migration smoke (PostgreSQL 16)
+    needs: [audit, secret-scan]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: xconfess_migration_smoke
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xconfess_migration_smoke"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      APP_ENV: ci
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_READ_HOST: localhost
+      DB_READ_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: unused
+      DB_NAME: xconfess_migration_smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm install --global npm@10.9.3
+      - run: npm ci --include=optional --no-audit --no-fund
+      - run: npm run backend:migration:smoke
+
   apps:
     name: Apps / lint, typecheck, build
     needs: [audit, secret-scan]

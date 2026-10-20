@@ -330,6 +330,34 @@ curl http://localhost:5000/api/health/ready
 If the schema is still out of sync, the response body includes `missingColumns`,
 `missingIndexes`, and a `hint` with the exact command to run.
 
+#### Reproduce the clean-database migration smoke test
+
+CI runs every migration against an empty PostgreSQL 16 database, then checks
+the migration history and required tables and indexes. To reproduce it locally,
+start a disposable database (the local trust setting is limited to the
+loopback port):
+
+```bash
+docker run --rm -d --name xconfess-migration-smoke \
+  -e POSTGRES_DB=xconfess_migration_smoke \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_HOST_AUTH_METHOD=trust \
+  -p 127.0.0.1:55433:5432 postgres:16-alpine
+
+DB_HOST=127.0.0.1 DB_PORT=55433 DB_READ_HOST=127.0.0.1 \
+  DB_READ_PORT=55433 DB_USERNAME=postgres \
+  DB_PASSWORD=unused DB_NAME=xconfess_migration_smoke \
+  npm run backend:migration:smoke
+
+docker stop xconfess-migration-smoke
+```
+
+The smoke command refuses a database with existing public tables so it cannot
+silently test an already-initialized schema. If a migration fails, the output
+names the failing migration or missing schema objects; use the same disposable
+database and command while fixing it, then stop and recreate the container to
+rerun from an empty database.
+
 ### Lint
 
 ```bash
