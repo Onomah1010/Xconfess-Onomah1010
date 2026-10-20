@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings, CheckCheck, Filter, X } from "lucide-react";
+import { Bell, Settings, CheckCheck, Filter, X } from "lucide-react";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationPreferences } from "./NotificationPreference";
 import { NotificationType } from "@/app/types/notifications";
 import { useNotifications } from "@/app/lib/hooks/useNotifications";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface NotificationCenterProps {
   onClose?: () => void;
@@ -43,6 +44,27 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
     if (filterType !== "all" && notification.type !== filterType) return false;
     return true;
   });
+
+  // Empty copy depends on why the list is empty: no notifications at all,
+  // an unread-only view with nothing unread, or a filter that matches nothing.
+  const hasActiveFilter = showUnreadOnly || filterType !== "all";
+  const emptyCopy = !hasActiveFilter
+    ? {
+        icon: <Bell className="w-6 h-6 text-gray-400" aria-hidden="true" />,
+        title: "No notifications yet",
+        description: "Activity on your confessions will show up here",
+      }
+    : showUnreadOnly && filterType === "all"
+      ? {
+          icon: <CheckCheck className="w-6 h-6 text-gray-400" aria-hidden="true" />,
+          title: "All caught up!",
+          description: "You've read all your notifications.",
+        }
+      : {
+          icon: <Filter className="w-6 h-6 text-gray-400" aria-hidden="true" />,
+          title: "No notifications match these filters",
+          description: 'Try another type, or turn off "Show unread only".',
+        };
 
   const notificationTypes = [
     { value: "all", label: "All" },
@@ -165,18 +187,12 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : filteredNotifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center p-6">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-              <Filter className="w-6 h-6 text-gray-400" />
-            </div>
-            <p className="text-sm font-medium text-gray-700 mb-1">
-              {showUnreadOnly ? "All caught up!" : "No notifications yet"}
-            </p>
-            <p className="text-xs text-gray-500">
-              {showUnreadOnly
-                ? "You've read all your notifications."
-                : "Activity on your confessions will show up here"}
-            </p>
+          <div role="status" className="flex h-40 items-center justify-center">
+            <EmptyState
+              icon={emptyCopy.icon}
+              title={emptyCopy.title}
+              description={emptyCopy.description}
+            />
           </div>
         ) : (
           <div className="divide-y divide-gray-200">

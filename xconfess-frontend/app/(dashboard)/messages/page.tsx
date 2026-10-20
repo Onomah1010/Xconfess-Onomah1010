@@ -9,13 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Send, User as UserIcon, MessageSquare, WifiOff, RefreshCw, Inbox, AlertCircle, Lock, Wifi, WifiOff as WifiOffIcon } from 'lucide-react';
+import { Send, User as UserIcon, MessageSquare, WifiOff, RefreshCw, AlertCircle, Lock, Wifi, WifiOff as WifiOffIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useGlobalToast } from '@/app/components/common/Toast';
 import { useMessageE2E } from '@/app/lib/hooks/useMessageE2E';
 import { useMessagesWebSocket, useMessageReconciliation } from '@/app/lib/hooks/useMessagesWebSocket';
 import { ENCRYPTED_PREVIEW } from '@/app/lib/crypto/messageE2E';
 import { ConfirmDialog } from '@/app/components/admin/ConfirmDialog';
+import { ThreadListEmptyState, ThreadMessagesEmptyState } from '@/app/components/messages/MessagesEmptyState';
 
 function extractPageData<T>(payload: unknown): T[] {
   if (!payload || typeof payload !== 'object') return [];
@@ -176,13 +177,7 @@ function MobileThreadList({
             </div>
           ) : threads.length === 0 ? (
             <div className="p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
-              <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-full mb-4">
-                <Inbox className="w-10 h-10 text-gray-400" />
-              </div>
-              <p className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">No messages yet</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
-                When someone replies to your confession or you send a message, conversations will appear here.
-              </p>
+              <ThreadListEmptyState />
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -673,11 +668,7 @@ export default function MessagesPage() {
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center text-center py-16">
-                    <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-full mb-3">
-                      <MessageSquare className="w-6 h-6 text-gray-400" />
-                    </div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">No messages yet</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-[200px]">Start the conversation by sending a message below.</p>
+                    <ThreadMessagesEmptyState />
                   </div>
                 ) : (
                   <div className="space-y-4 pb-4">
@@ -781,13 +772,7 @@ export default function MessagesPage() {
                 </div>
               ) : threads.length === 0 ? (
                 <div className="p-8 flex flex-col items-center justify-center text-center">
-                  <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-full mb-4">
-                    <Inbox className="w-10 h-10 text-gray-400" />
-                  </div>
-                  <p className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">No messages yet</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[220px]">
-                    When someone replies to your confession or you send a message, conversations will appear here.
-                  </p>
+                  <ThreadListEmptyState />
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -928,11 +913,7 @@ export default function MessagesPage() {
                       ))}
                       {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center text-center py-16">
-                          <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-full mb-3">
-                            <MessageSquare className="w-8 h-8 text-gray-400" />
-                          </div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">No messages in this thread yet</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 max-w-[220px]">Send a message to start the conversation.</p>
+                          <ThreadMessagesEmptyState />
                         </div>
                       )}
                       <div ref={messagesEndRef} />
