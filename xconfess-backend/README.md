@@ -201,3 +201,11 @@ Quick check after `npm run start:dev`:
 curl -s http://localhost:3000/api/health/live   # {"status":"ok"}
 curl -s http://localhost:3000/api/health/ready  # {"status":"ok",...}
 ```
+
+## Operational Metrics
+
+Privacy-safe latency, status and feed-query metrics are exposed to admins at
+`GET /api/metrics` (Prometheus text format). Labels are restricted to closed,
+low-cardinality lists and never contain user or confession identifiers.
+See [docs/observability-metrics.md](./docs/observability-metrics.md) for the
+metric list and the label privacy rules.

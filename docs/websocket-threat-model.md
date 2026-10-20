@@ -75,3 +75,7 @@ Clients receive the correlation ID and reason code in the HTTP 401 response body
 - Browser smoke validation, when needed, should connect from the configured
   frontend origin and then repeat from a non-allowed origin to confirm the
   Socket.IO CORS rejection appears in the browser console/network panel.
+
+## Related Documentation
+
+- [WebSocket Event Contracts & Authorization](websocket-events-and-authorization.md) — Comprehensive reference of event names, payload schemas, and room subscription lifecycles.

@@ -116,10 +116,11 @@ jobs:
         working-directory: xconfess-contracts
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.86.0
           components: rustfmt, clippy
-          targets: wasm32-unknown-unknown
+          targets: wasm32v1-none
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: xconfess-contracts
@@ -129,3 +130,9 @@ jobs:
       - run: cargo test --workspace
       - name: Check contract ABI drift
         run: bash scripts/check-abi-drift.sh
+      - name: Rebuild WASM and verify release manifest
+        working-directory: .
+        run: bash scripts/contracts-release.sh check
+      - name: Test release manifest validation failures
+        working-directory: .
+        run: bash scripts/test-contract-release-metadata.sh

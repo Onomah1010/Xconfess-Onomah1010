@@ -177,6 +177,43 @@ describe('ConfessionService — feed pagination', () => {
     });
   });
 
+  it('continues across identical-timestamp rows using the unique id boundary', async () => {
+    const timestamp = new Date('2026-01-01T00:00:00.000Z');
+    qb.getMany
+      .mockResolvedValueOnce([
+        makeConfession('00000000-0000-0000-0000-000000000003', 'newest', timestamp),
+        makeConfession('00000000-0000-0000-0000-000000000002', 'boundary', timestamp),
+        makeConfession('00000000-0000-0000-0000-000000000001', 'probe', timestamp),
+      ])
+      .mockResolvedValueOnce([
+        makeConfession('00000000-0000-0000-0000-000000000001', 'older id', timestamp),
+      ]);
+
+    const firstPage = await service.getConfessions({ limit: 2, sort: SortOrder.NEWEST });
+    const secondPage = await service.getConfessions({
+      limit: 2,
+      sort: SortOrder.NEWEST,
+      cursor: firstPage.nextCursor!,
+    });
+
+    expect(firstPage.data.map(({ id }) => id)).toEqual([
+      '00000000-0000-0000-0000-000000000003',
+      '00000000-0000-0000-0000-000000000002',
+    ]);
+    expect(secondPage.data.map(({ id }) => id)).toEqual([
+      '00000000-0000-0000-0000-000000000001',
+    ]);
+    expect(qb.orderBy).toHaveBeenCalledWith('confession.created_at', 'DESC');
+    expect(qb.addOrderBy).toHaveBeenCalledWith('confession.id', 'DESC');
+    expect(qb.andWhere).toHaveBeenCalledWith(
+      '(confession.created_at, confession.id) < (:createdAt, :id)',
+      {
+        createdAt: timestamp.toISOString(),
+        id: '00000000-0000-0000-0000-000000000002',
+      },
+    );
+  });
+
   describe('middle page via offset', () => {
     it('applies skip for page > 1 and no cursor', async () => {
       qb.getMany.mockResolvedValue([makeConfession('x')]);

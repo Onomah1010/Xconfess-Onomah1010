@@ -65,6 +65,19 @@ stellar contract invoke --id $CONFESSION_ANCHOR_ID -- get_owner
 stellar contract invoke --id $CONFESSION_ANCHOR_ID -- is_paused
 ```
 
+#### Anchor Idempotency and Events
+
+`anchor_confession` stores a hash only once. The first successful call returns
+`anchored`, increments `get_confession_count`, and emits one
+`confession_anchor` event. A repeated call for the same hash returns `exists`:
+it preserves the original timestamp and count, and emits no additional event.
+Indexers must therefore treat `confession_anchor` as an insert-only signal and
+must not infer a new anchor from an `exists` response.
+
+The unique-anchor count uses checked arithmetic. If it is exhausted, the call
+fails before storing the submitted hash, so operators can safely retry only
+after resolving the capacity incident.
+
 #### Administrative Functions
 
 | Function | Purpose | Required Role |
