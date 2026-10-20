@@ -5,6 +5,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
   Optional,
+  RequestTimeoutException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -60,6 +61,12 @@ import { mapToSlimConfession } from './utils/confession-mapper';
 import { AnomalyDetectionService } from '../anomaly/anomaly-detection.service';
 import { ConfessionIdempotencyService } from './confession-idempotency.service';
 import { IdempotencyScope } from './idempotency-scope';
+import { ErrorCode } from '../common/errors/error-codes';
+import {
+  DEFAULT_SEARCH_QUERY_TIMEOUT_MS,
+  isSearchQueryTimeoutError,
+  SEARCH_TIMEOUT_MESSAGE,
+} from './search-query-timeout';
 import { AnalyticsEventService } from '../analytics/analytics-event.service';
 import { OperationalMetricsService } from '../observability/operational-metrics.service';
 import { FeedTypeLabel } from '../observability/metric-labels';
@@ -690,19 +697,67 @@ export class ConfessionService {
     return this.observeFeed('search', () => this.runSearch(dto));
   }
 
+  private getSearchQueryTimeoutMs(): number {
+    const configured = this.configService.get<number>(
+      'app.searchQueryTimeoutMs',
+    );
+    return typeof configured === 'number' && Number.isFinite(configured)
+      ? configured
+      : DEFAULT_SEARCH_QUERY_TIMEOUT_MS;
+  }
+
+  /**
+   * Converts a search statement timeout into a generic 408 and logs its
+   * duration with the term redacted. Other errors are returned unchanged so
+   * the caller rethrows them.
+   */
+  private mapSearchError(
+    err: unknown,
+    opts: {
+      durationMs: number;
+      timeoutMs: number;
+      rawTerm: string;
+      searchType: 'fulltext' | 'hybrid';
+      page: number;
+      limit: number;
+    },
+  ): unknown {
+    if (!isSearchQueryTimeoutError(err)) return err;
+
+    this.logger.logSearchTimeout(opts);
+    return new RequestTimeoutException({
+      code: ErrorCode.SEARCH_TIMEOUT,
+      message: SEARCH_TIMEOUT_MESSAGE,
+    });
+  }
+
   private async runSearch(dto: SearchConfessionDto) {
     if (!dto.q.trim())
       throw new BadRequestException('Search term cannot be empty');
     const limit =
       typeof dto.limit === 'number' ? dto.limit : Number(dto.limit) || 10;
     const sampled = this.shouldSampleSearch();
+    const timeoutMs = this.getSearchQueryTimeoutMs();
     const t0 = Date.now();
-    const result = await this.confessionRepo.hybridSearch(
-      dto.q.trim(),
-      dto.page,
-      limit,
-      dto,
-    );
+    let result;
+    try {
+      result = await this.confessionRepo.hybridSearch(
+        dto.q.trim(),
+        dto.page,
+        limit,
+        dto,
+        { timeoutMs },
+      );
+    } catch (err) {
+      throw this.mapSearchError(err, {
+        durationMs: Date.now() - t0,
+        timeoutMs,
+        rawTerm: dto.q,
+        searchType: 'hybrid',
+        page: dto.page ?? 1,
+        limit,
+      });
+    }
     const durationMs = Date.now() - t0;
     const resultCount = result?.confessions?.length ?? 0;
 
@@ -748,13 +803,27 @@ export class ConfessionService {
     const limit =
       typeof dto.limit === 'number' ? dto.limit : Number(dto.limit) || 10;
     const sampled = this.shouldSampleSearch();
+    const timeoutMs = this.getSearchQueryTimeoutMs();
     const t0 = Date.now();
-    const result = await this.confessionRepo.fullTextSearch(
-      dto.q.trim(),
-      dto.page,
-      limit,
-      dto,
-    );
+    let result;
+    try {
+      result = await this.confessionRepo.fullTextSearch(
+        dto.q.trim(),
+        dto.page,
+        limit,
+        dto,
+        { timeoutMs },
+      );
+    } catch (err) {
+      throw this.mapSearchError(err, {
+        durationMs: Date.now() - t0,
+        timeoutMs,
+        rawTerm: dto.q,
+        searchType: 'fulltext',
+        page: dto.page ?? 1,
+        limit,
+      });
+    }
     const durationMs = Date.now() - t0;
     const resultCount = result?.confessions?.length ?? 0;
 
