@@ -31,8 +31,8 @@ function ensureCommentPages(
   }
 
   return {
-    pageParams: [1],
-    pages: [{ comments: [], hasMore: false }],
+    pageParams: [undefined],
+    pages: [{ comments: [], hasMore: false, nextCursor: null }],
   };
 }
 
@@ -95,8 +95,11 @@ export function useCommentsQuery(confessionId: string, limit = DEFAULT_LIMIT) {
   const query = useInfiniteQuery({
     queryKey: queryKeys.comments.byConfession(confessionId),
     queryFn: async ({ pageParam }) => {
+      // The first page has no cursor. Each later page resumes from the
+      // server's opaque cursor, so every request is bounded by `limit` and
+      // ordering stays stable even when new comments arrive mid-thread.
       const result = await getComments(confessionId, {
-        page: pageParam,
+        cursor: pageParam,
         limit,
       });
 
@@ -106,9 +109,9 @@ export function useCommentsQuery(confessionId: string, limit = DEFAULT_LIMIT) {
 
       return result.data;
     },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.hasMore ? allPages.length + 1 : undefined,
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? (lastPage.nextCursor ?? undefined) : undefined,
     enabled: Boolean(confessionId),
   });
 
