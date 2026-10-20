@@ -19,6 +19,7 @@ import {
 } from '@/app/lib/utils/validation';
 
 const showDevMockAdminLogin =
+  process.env.NODE_ENV === 'development' &&
   process.env.NEXT_PUBLIC_ENABLE_DEV_MOCK_ADMIN_LOGIN === 'true';
 
 export default function LoginPage() {
