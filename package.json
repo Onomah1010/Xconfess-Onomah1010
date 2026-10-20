@@ -21,6 +21,7 @@
     "dev:frontend": "npm run dev --workspace=xconfess-frontend",
     "backend:build": "npm run build --workspace=xconfess-backend",
     "backend:test": "npm run test --workspace=xconfess-backend",
+    "backend:test:critical-coverage": "npm run test:cov:critical --workspace=xconfess-backend",
     "backend:test:e2e": "npm run test:e2e --workspace=xconfess-backend",
     "backend:lint": "npm run lint --workspace=xconfess-backend",
     "backend:migration:run": "npm run migration:run --workspace=xconfess-backend",
