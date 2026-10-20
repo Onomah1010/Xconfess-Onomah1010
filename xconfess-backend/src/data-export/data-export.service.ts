@@ -96,6 +96,7 @@ import { ExportRequest } from './entities/export-request.entity';
 import { ExportChunk } from './entities/export-chunk.entity';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import { EXPORT_QUEUE_NAME } from './data-export.constants';
+import { toCsv } from '../utils/output-escape';
 
 export type ExportHistoryStatus =
   | 'PENDING'
@@ -1043,9 +1044,6 @@ export class DataExportService {
   }
 
   convertToCsv(data: any[]): string {
-    if (!data || data.length === 0) return '';
-    const headers = Object.keys(data[0]).join(',');
-    const rows = data.map((obj) => Object.values(obj).join(',')).join('\n');
-    return `${headers}\n${rows}`;
+    return toCsv(data);
   }
 }
