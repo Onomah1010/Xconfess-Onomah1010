@@ -51,6 +51,7 @@ import { StellarService } from '../stellar/stellar.service';
 import { ContractService } from '../stellar/contract.service';
 import { AnchorConfessionDto } from '../stellar/dto/anchor-confession.dto';
 import { CacheService, CACHE_TTL } from '../cache/cache.service';
+import { ConfessionCacheKeys } from '../cache/cache-namespace';
 import { TagService } from './tag.service';
 import { ConfessionTag } from './entities/confession-tag.entity';
 import { toWindowBoundaries, TrendingWindow } from '../types/analytics.types';
@@ -565,6 +566,8 @@ export class ConfessionService {
       await this.confessionRepo.update(id, dto);
     }
 
+    await this.invalidateConfessionEntry(id);
+
     const updated = await this.confessionRepo.findOne({ where: { id } });
     if (updated)
       updated.message = decryptConfession(updated.message, this.aesKey);
@@ -581,6 +584,7 @@ export class ConfessionService {
       deletedAt: new Date(),
       deletedBy: deletedBy || null,
     });
+    await this.invalidateConfessionEntry(id);
     return { message: 'Confession soft-deleted', id };
   }
 
@@ -598,6 +602,7 @@ export class ConfessionService {
       deletedAt: null,
       deletedBy: null,
     });
+    await this.invalidateConfessionEntry(id);
     return { message: 'Confession restored', id };
   }
 
@@ -785,7 +790,7 @@ export class ConfessionService {
   }
 
   async getConfessionByIdWithViewCount(id: string, req: Request) {
-    const singleCacheKey = this.cacheService.buildKey('confession', id);
+    const singleCacheKey = ConfessionCacheKeys.single(id);
 
     const cached = await this.cacheService.get<any>(singleCacheKey);
     if (cached) {
@@ -945,6 +950,7 @@ export class ConfessionService {
     confession.requiresReview = false;
 
     const updated = await this.confessionRepo.save(confession);
+    await this.invalidateConfessionEntry(confessionId);
 
     const logs =
       await this.moderationRepoService.getLogsByConfession(confessionId);
@@ -1295,7 +1301,7 @@ export class ConfessionService {
       throw error;
     }
 
-    await this.cacheService.del(this.cacheService.buildKey('confession', id));
+    await this.cacheService.del(ConfessionCacheKeys.single(id));
 
     const updated = await this.confessionRepo.findOne({ where: { id } });
     if (updated) {
@@ -1361,7 +1367,7 @@ export class ConfessionService {
       });
       confession.isAnchored = true;
       confession.anchoredAt = now;
-      await this.cacheService.del(this.cacheService.buildKey('confession', id));
+      await this.cacheService.del(ConfessionCacheKeys.single(id));
     }
 
     return {
@@ -1391,7 +1397,17 @@ export class ConfessionService {
   }
 
   private async invalidateConfessionCache() {
-    await this.cacheService.delPattern('confessions:');
+    await this.cacheService.delPattern(ConfessionCacheKeys.listPrefix);
+  }
+
+  /**
+   * Evicts the cached single-confession entry and every cached listing, since
+   * any feed or tag page may include the confession. Call after any write that
+   * changes content, visibility, moderation status, or deletion state.
+   */
+  private async invalidateConfessionEntry(confessionId: string) {
+    await this.cacheService.del(ConfessionCacheKeys.single(confessionId));
+    await this.invalidateConfessionCache();
   }
 
   /**
@@ -1501,7 +1517,7 @@ export class ConfessionService {
       },
     );
 
-    await this.invalidateConfessionCache();
+    await this.invalidateConfessionEntry(confessionId);
 
     return {
       success: true,
@@ -1533,7 +1549,7 @@ export class ConfessionService {
       },
     );
 
-    await this.invalidateConfessionCache();
+    await this.invalidateConfessionEntry(confessionId);
 
     return {
       success: true,

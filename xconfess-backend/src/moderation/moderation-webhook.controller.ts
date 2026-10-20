@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Optional,
   Post,
   UnauthorizedException,
   BadRequestException,
@@ -23,6 +24,8 @@ import {
 import { ModerationRepositoryService } from './moderation-repository.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import { AuditActionType } from '../audit-log/audit-log.entity';
+import { CacheService } from '../cache/cache.service';
+import { ConfessionCacheKeys } from '../cache/cache-namespace';
 
 interface WebhookPayload {
   eventId: string;
@@ -81,6 +84,7 @@ export class ModerationWebhookController {
     private readonly confessionRepo: Repository<AnonymousConfession>,
     private readonly moderationRepoService: ModerationRepositoryService,
     private readonly auditLogService: AuditLogService,
+    @Optional() private readonly cacheService?: CacheService,
   ) {
     this.webhookSecret = this.configService.get<string>('WEBHOOK_SECRET', '');
     this.timestampToleranceSeconds = this.configService.get<number>(
@@ -304,6 +308,12 @@ export class ModerationWebhookController {
 
     // Mark event ID as processed
     this.processedEventIds.set(payload.eventId, Date.now());
+
+    // Status and visibility just changed, so any cached copy is now stale.
+    await this.cacheService?.del(
+      ConfessionCacheKeys.single(result.confessionId),
+    );
+    await this.cacheService?.delPattern(ConfessionCacheKeys.listPrefix);
 
     if (payload.moderationStatus === ModerationStatus.REJECTED) {
       this.eventEmitter.emit('moderation.high-severity', {
