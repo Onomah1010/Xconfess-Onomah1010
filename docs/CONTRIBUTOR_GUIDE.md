@@ -318,7 +318,7 @@ When the PR is ready, use the ready-for-review template:
 If your PR includes logs or screenshots, follow the redaction rules:
 
 - [Attaching logs to issues and PRs](LOG_ATTACHING_GUIDE.md)
-- [WebSocket event contracts and authorization](websocket-events-and-authorization.md)
+- [Data export retention and deletion lifecycle](data-export-retention.md)
 
 Never include production secrets, private keys, real user data, or KYC/payment
 information in repository artifacts.

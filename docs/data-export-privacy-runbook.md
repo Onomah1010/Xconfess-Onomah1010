@@ -59,7 +59,10 @@ During a compliance review or regulatory inquiry, the engineering team must prov
 
 *All Support and Engineering personnel must rely on these immutable audit events over user claims when verifying account data timelines.*
 
----
+## 4. Related Documentation
+
+- [Data Export Retention, Expiry, and Deletion Lifecycle](data-export-retention.md) — Comprehensive technical reference for lifecycle states, download tokens, 7-day cooldowns, and scheduled cleanup.
+
 
 ## 4. Request Lifecycle
 The export workflow is divided across three components: the API, the queue, and the generated artifacts.
