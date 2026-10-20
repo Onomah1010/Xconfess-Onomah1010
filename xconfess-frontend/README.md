@@ -21,6 +21,9 @@ Next.js 16 App Router frontend for xConfess.
 
 ## Local Development
 
+For startup, backend connectivity, service-worker, and environment troubleshooting,
+see the [frontend development troubleshooting guide](./TROUBLESHOOTING.md).
+
 From the repo root:
 
 ```bash
