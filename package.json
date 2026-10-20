@@ -57,6 +57,7 @@
     "ci": "npm run ci:backend && npm run ci:frontend && npm run ci:contract",
     "deploy:preflight": "npm run contracts:verify-env && node scripts/deploy-preflight.js",
     "deploy:smoke": "node scripts/deployed-smoke.js",
+    "deploy:smoke:test": "node --test scripts/__tests__/deployed-smoke.test.js",
     "readiness": "npm run production:readiness",
     "readiness:test": "node --test scripts/__tests__/production-readiness.test.js",
     "production:readiness": "node scripts/production-readiness.js",

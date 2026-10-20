@@ -230,6 +230,19 @@ export class MessagesService {
     const hasMore = messages.length > limit;
     const resultMessages = hasMore ? messages.slice(0, limit) : messages;
 
+    // A conversation is only addressable through messages that actually exist.
+    // Reject forged/unknown sender IDs on the initial request with the same
+    // non-disclosing 404 used for unauthorized viewers, rather than returning
+    // an empty (but successful) thread. This prevents an author from probing
+    // arbitrary anonymous identities and keeps the response indistinguishable
+    // from a non-existent thread. Cursor/paged follow-ups may legitimately
+    // return an empty page once the history is exhausted.
+    const isInitialRequest =
+      !query?.cursor && (!query?.page || query.page <= 1);
+    if (isInitialRequest && resultMessages.length === 0) {
+      throw new NotFoundException('Thread not found');
+    }
+
     let nextCursor: string | null = null;
     if (hasMore && resultMessages.length > 0) {
       const lastMessage = resultMessages[resultMessages.length - 1];

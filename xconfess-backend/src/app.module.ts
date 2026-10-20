@@ -44,6 +44,8 @@ import { AttachmentModule } from './attachment/attachment.module';
 import { BullModule } from '@nestjs/bullmq';
 import { StructuredLoggingInterceptor } from './common/logging/structured-logging.interceptor';
 import { GracefulShutdownModule } from './common/graceful-shutdown.module';
+import { ObservabilityModule } from './observability/observability.module';
+import { HttpMetricsMiddleware } from './observability/http-metrics.middleware';
 
 @Module({
   imports: [
@@ -130,6 +132,7 @@ import { GracefulShutdownModule } from './common/graceful-shutdown.module';
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
+    ObservabilityModule,
     HealthModule,
     AnalyticsModule,
     UserModule,
@@ -174,6 +177,10 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // RequestIdMiddleware first so downstream handlers/loggers can read
     // req.requestId, and so it's set even if SanitizationMiddleware throws.
-    consumer.apply(RequestIdMiddleware, SanitizationMiddleware).forRoutes('*');
+    // HttpMetricsMiddleware is first so latency covers the whole middleware
+    // chain and it still records requests rejected later (401/403/404/429).
+    consumer
+      .apply(HttpMetricsMiddleware, RequestIdMiddleware, SanitizationMiddleware)
+      .forRoutes('*');
   }
 }

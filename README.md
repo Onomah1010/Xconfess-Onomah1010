@@ -60,6 +60,7 @@ Follow these steps from a fresh clone to get the full stack running.
 - Node.js 22.x and npm >= 9
 - Docker (for Postgres and Redis)
 - Rust + `cargo` (only needed if working on contracts; see `docs/SOROBAN_SETUP.md`)
+- A Stellar testnet keypair (only needed for Stellar/Soroban work; see [Stellar Testnet Development Guide](docs/STELLAR_TESTNET_GUIDE.md))
 
 ### Contributor Quick Start
 
@@ -151,6 +152,8 @@ ENCRYPTION_MASTER_KEY_v1=0000000000000000000000000000000000000000000000000000000
 These values are valid for local bootstrapping only. Never reuse them in shared development, staging, production, demos, screenshots, issues, or PR comments.
 
 Mail (`MAIL_HOST`, `MAIL_USER`, `MAIL_PASSWORD`) and Stellar contract IDs are pre-filled with testnet values in the example file and can be left as-is for local development. Leave `STELLAR_FEATURES_ENABLED=false` (default) to boot without enforcing every contract ID; set it to `true` only when you need full on-chain anchoring and tipping.
+
+For a full walkthrough of running Stellar/Soroban functionality locally against testnet — required configuration, testnet wallet prerequisites, safe key-handling guidance, and how to disable Stellar features for normal local development — see [docs/STELLAR_TESTNET_GUIDE.md](docs/STELLAR_TESTNET_GUIDE.md).
 
 **Frontend** - copy the sample (no secrets required for basic local use):
 
@@ -367,7 +370,7 @@ When adding a new API endpoint, follow the [API endpoint contributor checklist](
 - `xconfess-backend/README.md`
 - `xconfess-frontend/README.md`
 - `xconfess-contracts/README.md`
-- `docs/message-e2e-encryption.md` — E2E private messaging protocol
+- [E2E Messaging Protocol and Local Test Guide](docs/message-e2e-encryption.md) — protocol, safe generated fixtures, expected failures, and focused test commands
 ## Native XConfess Wallet
 
 The app includes an optional embedded Stellar wallet at `/wallet`. Keypairs are generated or imported in the browser; the secret key is encrypted locally with a PIN-derived AES-GCM key. The backend stores only the public key and, when requested, ciphertext-only backups. Freighter remains an optional advanced provider and is not required for normal wallet, send, receive, or tipping flows.

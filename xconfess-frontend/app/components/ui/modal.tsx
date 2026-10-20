@@ -21,6 +21,7 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   className,
 }) => {
+  const titleId = React.useId();
   const { containerRef } = useFocusTrap({ isOpen, onClose, dialog: true });
 
   if (!isOpen) return null;
@@ -31,7 +32,7 @@ export const Modal: React.FC<ModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label={title || "Dialog"}
-      aria-labelledby={title ? "modal-title" : undefined}
+      aria-labelledby={title ? titleId : undefined}
     >
       {/* Backdrop */}
       <div
@@ -53,7 +54,7 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {title && (
           <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-            <h2 id="modal-title" className="text-lg font-semibold text-white">
+            <h2 id={titleId} className="text-lg font-semibold text-white">
               {title}
             </h2>
             <Button

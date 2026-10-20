@@ -8,19 +8,16 @@ import {
   Body,
   Get,
   Headers,
-  HttpStatus,
   Query,
   Param,
   Put,
   Delete,
   Req,
   Patch,
-  Res,
   UseGuards,
   UseInterceptors,
   Optional,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import {
@@ -36,6 +33,7 @@ import { ConfessionService } from './confession.service';
 import { CreateConfessionDto } from './dto/create-confession.dto';
 import { GetConfessionsByTagDto } from './dto/get-confessions-by-tag.dto';
 import { GetConfessionsDto } from './dto/get-confessions.dto';
+import { GetDeletedConfessionsDto } from './dto/get-deleted-confessions.dto';
 import { SearchConfessionDto } from './dto/search-confession.dto';
 import { UpdateConfessionDto } from './dto/update-confession.dto';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
@@ -43,7 +41,7 @@ import { SearchDiscoveryService } from '../search-discovery/search-discovery.ser
 import { SparseFieldsetsInterceptor } from '../common/interceptors/sparse-fieldsets.interceptor';
 import { QueryTimeoutInterceptor } from '../common/query-timeout.interceptor';
 import { ConfessionSchedulerService } from './confession-scheduler.service';
-import { ConfessionIdempotencyService } from './confession-idempotency.service';
+import { buildIdempotencyScope } from './idempotency-scope';
 
 const flattenValidationErrors = (
   errors: ValidationError[],
@@ -92,8 +90,6 @@ export class ConfessionController {
     private readonly searchDiscoveryService: SearchDiscoveryService,
     @Optional()
     private readonly schedulerService: ConfessionSchedulerService,
-    @Optional()
-    private readonly idempotencyService: ConfessionIdempotencyService,
   ) {}
 
   @Post()
@@ -120,48 +116,35 @@ export class ConfessionController {
       'Validation error — message exceeds 1000 chars or invalid enum.',
   })
   @ApiResponse({
-    status: 200,
-    description: 'Idempotent replay — the confession was already created for this Idempotency-Key.',
+    status: 201,
+    description:
+      'Idempotent replay — a repeated Idempotency-Key with the same payload returns the original confession and does not create a duplicate.',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Idempotency-Key was already used with a different payload (scoped per session/operation).',
   })
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async create(
     @Body() dto: CreateConfessionDto,
-    @Headers('idempotency-key') idempotencyKey: string | undefined,
+    @Headers('idempotency-key') idempotencyKeyHeader: string | undefined,
     @Headers('x-stellar-wallet') walletAddress: string | undefined,
-    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
   ) {
-    if (idempotencyKey && this.idempotencyService) {
-      const payloadHash = this.idempotencyService.computePayloadHash({
-        message: dto.message,
-        gender: (dto as any).gender ?? null,
-        tags: (dto as any).tags ?? null,
-        stellarTxHash: (dto as any).stellarTxHash ?? null,
-      });
+    // Accept the key from either the body or the `Idempotency-Key` header
+    // (header wins only when the body omits it) and let the service own the
+    // whole idempotency lifecycle. Scoping the key to this session/operation
+    // is what prevents cross-session collisions (Issue #2116).
+    const idempotencyKey = dto.idempotencyKey ?? idempotencyKeyHeader;
 
-      const check = await this.idempotencyService.check(idempotencyKey, payloadHash);
-
-      if (check.isReplay && check.cachedResponse) {
-        res.status(check.cachedStatus ?? HttpStatus.CREATED);
-        return check.cachedResponse;
-      }
-
-      if (!check.isReplay) {
-        try {
-          const confession = walletAddress
-            ? await this.service.create(dto, undefined, walletAddress)
-            : await this.service.create(dto);
-          await this.idempotencyService.commitSuccess(
-            check.record,
-            confession as any,
-            confession as any,
-            HttpStatus.CREATED,
-          );
-          return confession;
-        } catch (err) {
-          await this.idempotencyService.commitFailure(check.record);
-          throw err;
-        }
-      }
+    if (idempotencyKey) {
+      return this.service.create(
+        { ...dto, idempotencyKey },
+        undefined,
+        walletAddress,
+        buildIdempotencyScope(req),
+      );
     }
 
     return walletAddress
@@ -247,8 +230,9 @@ export class ConfessionController {
   @ApiOperation({ summary: 'List soft-deleted confessions (admin)' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  getDeleted(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this.service.getDeletedConfessions(page, limit);
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  getDeleted(@Query() dto: GetDeletedConfessionsDto) {
+    return this.service.getDeletedConfessions(dto.page, dto.limit);
   }
 
   /**

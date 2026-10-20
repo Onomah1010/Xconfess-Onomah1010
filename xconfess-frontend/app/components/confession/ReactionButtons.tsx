@@ -20,6 +20,7 @@ export const ReactionButton = ({
 }: Props) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [liveMessage, setLiveMessage] = useState("");
   const { addReaction, isPending, optimisticState, liveCounts, connectionState } = useReactions({
     confessionId,
     initialCounts: { like: 0, love: 0, [type]: count },
@@ -46,6 +47,8 @@ export const ReactionButton = ({
         ? `Too many reactions. Please wait ${result.error.retryAfter}s.`
         : result.error.message || "Failed to add reaction";
       setError(message);
+    } else {
+      setLiveMessage(`Reacted with ${type}.`);
     }
   };
 
@@ -55,6 +58,9 @@ export const ReactionButton = ({
 
   return (
     <div className="relative">
+      <span className="sr-only" aria-live="polite" aria-atomic="true">
+        {liveMessage}
+      </span>
       <button
         onClick={react}
         disabled={isPending}

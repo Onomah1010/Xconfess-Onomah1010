@@ -8,7 +8,14 @@ import {
 import { Injectable } from '@nestjs/common';
 import { AnonymousConfession } from '../entities/confession.entity';
 import { SearchConfessionDto } from '../dto/search-confession.dto';
-import { decodeCursor, encodeCursor } from '../../common/pagination';
+import { normalizeSearchQuery } from '../search-query-normalizer';
+import { decodeCursor } from '../../common/pagination';
+import {
+  applyNewestFeedOrder,
+  encodeFeedCursor,
+  feedKeysetPredicate,
+  toFeedCursorPosition,
+} from '../../common/pagination/feed-ordering';
 
 /**
  * Repository for handling database operations related to anonymous confessions.
@@ -63,7 +70,10 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
       .andWhere(
         "(anonymousUser.userLinks IS NULL OR anonymousUser.userLinks = '{}' OR user.privacy_settings IS NULL OR user.privacy_settings->>'isDiscoverable' = 'true' OR JSON_TYPE(user.privacy_settings, '$.isDiscoverable') IS NULL)",
       );
-    return this.excludeDeleted(qb).orderBy('confession.created_at', 'DESC').getMany();
+    return this.excludeDeleted(qb)
+      .orderBy('confession.created_at', 'DESC')
+      .addOrderBy('confession.id', 'DESC')
+      .getMany();
   }
 
   /**
@@ -87,10 +97,8 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
     const safeLimit = typeof limit === 'number' ? limit : 10;
     const offset = (page - 1) * safeLimit;
 
-    const sanitizedTerm = searchTerm
-      .replace(/[^\w\s]/g, ' ')
-      .trim()
-      .split(/\s+/)
+    const sanitizedTerm = normalizeSearchQuery(searchTerm)
+      .split(' ')
       .filter((term) => term.length > 0)
       .join(' & ');
 
@@ -153,6 +161,8 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
       )
       .orderBy('rank', 'DESC')
       .addOrderBy('confession.created_at', 'DESC')
+      // unique tie-breaker so equal relevance scores never reorder pages
+      .addOrderBy('confession.id', 'DESC')
       .skip(offset)
       .take(limit);
 
@@ -260,6 +270,7 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
 
     queryBuilder
       .orderBy('confession.created_at', 'DESC')
+      .addOrderBy('confession.id', 'DESC')
       .skip(offset)
       .take(safeLimit);
 
@@ -397,6 +408,9 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
       )
       .groupBy('confession.id')
       .orderBy('trending_score', 'DESC')
+      // Trending scores tie frequently; keep the feed deterministic (Issue #2118).
+      .addOrderBy('confession.created_at', 'DESC')
+      .addOrderBy('confession.id', 'DESC')
       .limit(limit)
       .setParameter('startAt', resolvedStartAt.toISOString())
       .setParameter('endAt', resolvedEndAt.toISOString())
@@ -458,19 +472,20 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
       ]);
 
     if (parsedCursor) {
-      queryBuilder.andWhere(
-        '(confession.created_at < :createdAt OR (confession.created_at = :createdAt AND confession.id < :id))',
-        { createdAt: parsedCursor.created_at, id: parsedCursor.id },
+      // Same row-value keyset predicate the main feed uses, so tag pages
+      // consume exactly the ordering below (Issue #2118).
+      const keyset = feedKeysetPredicate(
+        toFeedCursorPosition(parsedCursor),
+        'confession',
       );
+      queryBuilder.andWhere(keyset.sql, keyset.params);
     } else if (page > 1) {
       const offset = (page - 1) * safeLimit;
       queryBuilder.skip(offset);
     }
 
-    queryBuilder
-      .orderBy('confession.created_at', 'DESC')
-      .addOrderBy('confession.id', 'DESC')
-      .take(safeLimit + 1);
+    // Newest-first with the shared created_at/id ordering.
+    applyNewestFeedOrder(queryBuilder, 'confession').take(safeLimit + 1);
 
     const totalQuery = this.createQueryBuilder('confession')
       .innerJoin('confession.confessionTags', 'confessionTag')
@@ -499,9 +514,9 @@ export class AnonymousConfessionRepository extends Repository<AnonymousConfessio
     let nextCursor: string | undefined;
     if (hasMore && confessions.length > 0) {
       const lastItem = confessions[confessions.length - 1];
-      nextCursor = encodeCursor({
+      nextCursor = encodeFeedCursor({
         id: lastItem.id,
-        created_at: lastItem.created_at.toISOString(),
+        created_at: lastItem.created_at,
       });
     }
 
