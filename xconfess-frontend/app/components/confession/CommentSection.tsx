@@ -32,6 +32,7 @@ export function CommentSection({
     fetchNextPage,
     hasMore,
     isFetchingNextPage,
+    isFetchNextPageError,
     loading,
     refetch,
   } = useCommentsQuery(confessionId);
@@ -200,7 +201,7 @@ export function CommentSection({
         </div>
       )}
 
-      {!loading && error && (
+      {!loading && error && comments.length === 0 && (
         <div
           className="rounded-lg border border-red-900/50 bg-red-900/10 p-4 text-sm text-red-300"
           role="alert"
@@ -220,7 +221,7 @@ export function CommentSection({
         </div>
       )}
 
-      {!error && comments.length > 0 && (
+      {comments.length > 0 && (
         <>
           <ul className="m-0 min-w-0 list-none space-y-3 p-0" role="list">
             {topLevelComments.map((comment) => (
@@ -234,6 +235,26 @@ export function CommentSection({
               </li>
             ))}
           </ul>
+
+          {isFetchNextPageError && (
+            <div
+              className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-red-900/50 bg-red-900/10 p-3 text-sm text-red-300"
+              role="alert"
+            >
+              <p>Couldn&apos;t load more comments. Your loaded comments are still here.</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                onClick={() => {
+                  void fetchNextPage();
+                }}
+                disabled={isFetchingNextPage}
+              >
+                Try again
+              </Button>
+            </div>
+          )}
 
           {hasMore && (
             <div className="mt-4 flex justify-center">

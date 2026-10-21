@@ -137,6 +137,27 @@ Search parameters are validated and allow hybrid query behavior.
 
 Same query shape as `/confessions/search` but performs a full-text search over confession content.
 
+### Search timeouts
+
+Both search endpoints run under a server-side statement timeout set by `SEARCH_QUERY_TIMEOUT_MS` (default `5000`, range `100`–`60000`). PostgreSQL cancels a search that runs longer.
+
+When a search is cancelled, the endpoint responds with **HTTP 408**. The error body uses the standard shape, with `code` set to `SEARCH_TIMEOUT`:
+
+```json
+{
+  "status": 408,
+  "code": "SEARCH_TIMEOUT",
+  "message": "Search took too long to complete. Please try a narrower search.",
+  "timestamp": "2026-04-23T00:00:00.000Z",
+  "path": "/api/confessions/search",
+  "requestId": "req_123"
+}
+```
+
+Clients should show the message and let the user narrow the query (for example, add a filter or shorten the term). Retrying the same query is unlikely to succeed. The server logs a `search.query_timeout` warning with the duration, the configured timeout, the page and limit, and the term's shape (length and word count). The raw term is never logged.
+
+Search requests that finish in time are unchanged. Other database failures keep the previous behaviour.
+
 ### Trending confessions
 
 `GET /api/confessions/trending/top`

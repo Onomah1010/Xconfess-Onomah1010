@@ -204,6 +204,7 @@ export const envValidationSchema = Joi.object({
   RATE_LIMIT_GET_MAX: Joi.number().default(50),
   RATE_LIMIT_GET_WINDOW: Joi.number().default(60),
   NOTIFICATION_DEDUPE_TTL_SECONDS: Joi.number().default(60),
+  SEARCH_QUERY_TIMEOUT_MS: Joi.number().integer().min(100).max(60000).default(5000),
   ANALYTICS_ENABLED: Joi.string().valid('true', 'false').default('true'),
   ANALYTICS_RETENTION_DAYS: Joi.number().min(1).default(365),
   TRACTION_CACHE_TTL_SECONDS: Joi.number().min(1).max(3600).default(60),

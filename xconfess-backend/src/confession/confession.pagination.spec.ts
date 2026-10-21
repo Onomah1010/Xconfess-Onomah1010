@@ -449,7 +449,7 @@ describe('ConfessionService — search pagination', () => {
 
       await service.search({ q: 'test', page: 2, limit: 10 });
 
-      expect(repository.hybridSearch).toHaveBeenCalledWith('test', 2, 10, expect.any(Object));
+      expect(repository.hybridSearch).toHaveBeenCalledWith('test', 2, 10, expect.any(Object), expect.objectContaining({ timeoutMs: 5000 }));
     });
 
     it('empty page: data=[], meta.total=0, meta.totalPages=0', async () => {
@@ -518,7 +518,7 @@ describe('ConfessionService — search pagination', () => {
 
       await service.fullTextSearch({ q: 'work', page: 2, limit: 10 });
 
-      expect(repository.fullTextSearch).toHaveBeenCalledWith('work', 2, 10, expect.any(Object));
+      expect(repository.fullTextSearch).toHaveBeenCalledWith('work', 2, 10, expect.any(Object), expect.objectContaining({ timeoutMs: 5000 }));
     });
 
     it('empty page: data=[], total=0', async () => {
