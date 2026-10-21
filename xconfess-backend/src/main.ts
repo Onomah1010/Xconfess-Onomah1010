@@ -12,6 +12,7 @@ import { RequestIdMiddleware } from './middleware/request-id.middleware';
 import { WebSocketAdapter } from './websocket/websocket.adapter';
 import { AppLogger } from './logger/logger.service';
 import { configureRequestBodyParsing } from './common/request-body-limits';
+import { buildCorsOptions } from './config/cors.config';
 import { GracefulShutdownService } from './common/graceful-shutdown.service';
 import { Queue } from 'bullmq';
 import { getQueueToken } from '@nestjs/bullmq';
@@ -56,17 +57,16 @@ async function bootstrap() {
     }),
   );
 
-  // â”€â”€ 3. CORS â€” one allowed origin derived from config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  //    Both HTTP and the WebSocket adapter read FRONTEND_URL so there is a
-  //    single documented source of truth for allowed origins.
-  const frontendUrl =
-    configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-
-  app.enableCors({
-    origin: frontendUrl,
-    credentials: true,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  });
+  // ── 3. CORS — explicit origin allowlist ───────────────────────────────────
+  //    `CORS_ALLOWED_ORIGINS` (comma-separated) wins over the single
+  //    `FRONTEND_URL` default. Wildcards are rejected at startup because
+  //    credentialed requests are enabled.
+  app.enableCors(
+    buildCorsOptions({
+      corsAllowedOrigins: configService.get<string>('CORS_ALLOWED_ORIGINS'),
+      frontendUrl: configService.get<string>('FRONTEND_URL'),
+    }),
+  );
 
   // â”€â”€ 4. WebSocket adapter â€” reads the same FRONTEND_URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   app.useWebSocketAdapter(new WebSocketAdapter(app, configService));

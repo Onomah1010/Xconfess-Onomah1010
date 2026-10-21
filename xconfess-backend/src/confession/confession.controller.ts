@@ -40,6 +40,7 @@ import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
 import { SearchDiscoveryService } from '../search-discovery/search-discovery.service';
 import { SparseFieldsetsInterceptor } from '../common/interceptors/sparse-fieldsets.interceptor';
 import { QueryTimeoutInterceptor } from '../common/query-timeout.interceptor';
+import { DeprecatedApi } from '../common/decorators/deprecated-api.decorator';
 import { ConfessionSchedulerService } from './confession-scheduler.service';
 import { buildIdempotencyScope } from './idempotency-scope';
 
@@ -154,6 +155,13 @@ export class ConfessionController {
 
   @Get()
   @UseInterceptors(QueryTimeoutInterceptor)
+  @DeprecatedApi({
+    deprecatedAt: '2026-10-21',
+    sunsetAt: '2027-04-30',
+    successor: '/api/confessions',
+    guidance: 'Use cursor pagination (?cursor=...&limit=...) instead of ?page=.',
+    legacyQueryParam: 'page',
+  })
   @ApiOperation({ summary: 'Get paginated confessions list' })
   @ApiResponse({
     status: 200,

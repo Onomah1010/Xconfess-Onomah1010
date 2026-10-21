@@ -111,19 +111,24 @@ Response example:
 
 Query parameters:
 
-- `page` (optional)
+- `cursor` (optional, recommended) — opaque cursor from the previous response
 - `limit` (optional)
+- `page` (optional, **deprecated**) — offset pagination; responses include
+  `Deprecation`, `Sunset` and `Link` headers. Use `cursor` instead.
 
 Response shape:
 
 ```json
 {
   "data": [ /* confession objects */ ],
-  "total": 1,
-  "page": 1,
+  "nextCursor": "eyJpZCI6...",
+  "hasMore": true,
   "limit": 20
 }
 ```
+
+> Legacy offset responses still include `total` and `page`; see
+> [Deprecation headers](#deprecation-headers).
 
 ### Search confessions
 
@@ -340,6 +345,36 @@ The response also includes a `Retry-After` response header.
 
 > Note: `POST /api/confessions/:id/tips/verify` may also include a stricter retry header such as `Retry-After-strict`.
 
+## Deprecation headers
+
+Legacy routes (or legacy modes of a supported route) send standardized
+deprecation headers so clients can migrate before the behaviour is removed:
+
+| Header | Meaning |
+| --- | --- |
+| `Deprecation` | `@<unix-seconds>` timestamp when the behaviour became deprecated (RFC 9745). |
+| `Sunset` | HTTP date after which the behaviour may be removed (RFC 8594). |
+| `Link` | `<successor>; rel="successor-version"`, with a `title` containing a short migration note. |
+
+The following legacy modes currently emit these headers only when the client
+uses the deprecated parameter, so cursor-based requests stay header-free:
+
+| Route | Deprecated parameter | Replacement |
+| --- | --- | --- |
+| `GET /api/confessions` | `page` | Cursor pagination with `cursor` + `limit`. |
+| `GET /api/confessions/:confessionId/comments` | `page` | Cursor pagination with `cursor` + `limit`. |
+| `GET /api/messages/thread/:threadId` | `page` | Cursor pagination with `cursor` + `limit`. |
+
+Sunset date for these modes is **30 April 2027**. Migrate by replacing
+`?page=<n>` with the `nextCursor` value returned by the previous response:
+
+```bash
+curl "http://localhost:5000/api/confessions?cursor=<nextCursor>&limit=20"
+```
+
+The headers are also exposed to browser JavaScript through
+`Access-Control-Expose-Headers`.
+
 ## Error codes
 
 xConfess uses consistent error codes in every non-2xx response.
@@ -442,6 +477,26 @@ resource was not found, `409` means the request conflicts with current state,
 server error. A `429` response also includes `retryAfter` and the `Retry-After`
 header.
 
+### Private resources return 404
+
+Routes that expose user-owned data never distinguish "does not exist" from "you
+cannot access it". A missing resource, an expired artifact, and a resource owned
+by another user all return the same `404` with the same `message`:
+
+- `GET /api/messages/thread/:threadId` and the thread read/delete routes →
+  `Thread not found`
+- `POST /api/messages/reply` from a non-author →
+  `Message not found` (identical to an unknown message id)
+- `GET /api/data-export/download/:id` and
+  `GET /api/export/jobs/:userId/:jobId/download` →
+  `Export not found or expired`
+- `GET /api/data-export/:id/status` →
+  `Export request not found or unauthorized`
+
+Do not rely on a `403` to detect ownership failures on these routes; treat any
+`404` as "unavailable" and refresh the caller's resource list instead of
+retrying with a different id.
+
 ## Webhooks
 
 xConfess supports moderation webhooks at:
@@ -465,16 +520,24 @@ This endpoint is not authenticated via JWT. Instead it requires HMAC signature v
 
 ### Signature header
 
-The webhook sender must sign the raw JSON payload with HMAC SHA256 using `WEBHOOK_SECRET` and include:
+The webhook sender must sign `"<timestamp>.<raw JSON payload>"` with HMAC SHA256
+using `WEBHOOK_SECRET` and send both values in a timestamped header:
 
 ```http
-x-webhook-signature: <hex-encoded-hmac-sha256>
+x-webhook-signature: t=<unix-seconds>,v1=<hex-encoded-hmac-sha256>
 ```
+
+Replace `<unix-seconds>` with the same timestamp used to build the signed
+message, and `<hex-encoded-hmac-sha256>` with the 64-character hex digest.
 
 ### Delivery rules
 
-- The `timestamp` must be present and parse as a valid ISO-8601 value.
-- The payload must be received within 300 seconds of the timestamp.
+- The `timestamp` must be present and parse as a valid Unix timestamp in seconds.
+- The payload must be received within 300 seconds of the timestamp
+  (`WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS` overrides the window).
+- Signatures are compared in constant time, so missing, malformed (non-hex or
+  wrong-length) and stale signatures are rejected with a generic error that does
+  not reveal which check failed.
 - Duplicate deliveries are treated as idempotent and ignored safely.
 
 ### Success response
