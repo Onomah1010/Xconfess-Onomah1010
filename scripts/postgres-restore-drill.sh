@@ -1,1 +1,89 @@
-IyEvdXNyL2Jpbi9lbnYgYmFzaAojCiMgU2NoZWR1bGVkIFBvc3RncmVTUUwgcmVzdG9yZSBkcmlsbC4KIwojIFByb3Zlcywgb24gYSBzY2hlZHVsZSwgdGhhdCBhIGJhY2t1cCBjYW4gYWN0dWFsbHkgYmUgcmVzdG9yZWQgYW5kIHBhc3MKIyBpbnRlZ3JpdHkgY2hlY2tzLiBUaGUgZHJpbGwgaXMgc3RyaWN0bHkgaXNvbGF0ZWQ6IGl0IHJlZnVzZXMgdG8gcnVuIGFnYWluc3QKIyB0aGUgcHJvZHVjdGlvbiBkYXRhYmFzZSBhbmQgbmV2ZXIgb3ZlcndyaXRlcyBwcm9kdWN0aW9uIGRhdGEuCiMKIyBVc2FnZToKIyAgIFhDT05GRVNTX1JFU1RPUkVfVEFSR0VUPXBvc3RncmVzcWw6Ly91c2VyOnBhc3NAaXNvbGF0ZWQtaG9zdC9kcmlsbC1kYiBcCiMgICBYQ09ORkVTU19CQUNLVVBfRklMRT0vcGF0aC90by9iYWNrdXAuZHVtcCBcCiMgICAgIGJhc2ggc2NyaXB0cy9wb3N0Z3Jlcy1yZXN0b3JlLWRyaWxsLnNoCiMKIyBSZXF1aXJlZCBlbnZpcm9ubWVudCB2YXJpYWJsZXM6CiMgICBYQ09ORkVTU19SRVNUT1JFX1RBUkdFVCAgY29ubmVjdGlvbiB0YXJnZXQgKE1VU1QgYmUgYW4gaXNvbGF0ZWQgZW52aXJvbm1lbnQpCiMgICBYQ09ORkVTU19CQUNLVVBfRklMRSAgICAgcGF0aCB0byB0aGUgYmFja3VwIGFydGlmYWN0IHRvIHJlc3RvcmUKIwojIE9wdGlvbmFsOgojICAgWENPTkZFU1NfRFJJTExfUkVQT1JUICAgIHBhdGggdG8gd3JpdGUgdGhlIGRyaWxsIHJlcG9ydCAoZGVmYXVsdDogLi9yZXN0b3JlLWRyaWxsLXJlcG9ydC5sb2cpCiMgICBYQ09ORkVTU19QUk9EX01BUktFUiAgICAgc3Vic3RyaW5nIHRoYXQgbWFya3MgYSBwcm9kdWN0aW9uIHRhcmdldCAoZGVmYXVsdDogInByb2QiKQoKc2V0IC1ldW8gcGlwZWZhaWwKClJFUE9SVF9GSUxFPSIke1hDT05GRVNTX0RSSUxMX1JFUE9SVDotLi9yZXN0b3JlLWRyaWxsLXJlcG9ydC5sb2d9IgpQUk9EX01BUktFUj0iJHtYQ09ORkVTU19QUk9EX01BUktFUjotcHJvZH0iCgpsb2coKSB7CiAgZWNobyAiW3Jlc3RvcmUtZHJpbGxdICQqIgp9CgpmYWlsKCkgewogIGxvZyAiRVJST1I6ICQqIiA+JjIKICBlY2hvICJvdXRjb21lPWZhaWx1cmUgcmVhc29uPSQqIiA+PiAiJFJFUE9SVF9GSUxFIgogIGV4aXQgMQp9CgojIFJlc29sdmUgcGdfcmVzdG9yZSBhbmQgcHNxbCwgaG9ub3JpbmcgYW4gb3ZlcnJpZGUgZm9yIHRlc3RzLgpQR19SRVNUT1JFPSIke1hDT05GRVNTX1BHX1JFU1RPUkU6LXBnX3Jlc3RvcmV9IgpQU1FMPSIke1hDT05GRVNTX1BTUUw6LXBzcWx9IgoKVEFSR0VUPSIke1hDT05GRVNTX1JFU1RPUkVfVEFSR0VUOi19IgpCQUNLVVBfRklMRT0iJHtYQ09ORkVTU19CQUNLVVBfRklMRTotfSIKCiMgLS0tIEd1YXJkIDE6IHJlcXVpcmVkIGlucHV0cyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCmlmIFsgLXogIiRUQVJHRVQiIF07IHRoZW4KICBmYWlsICJYQ09ORkVTU19SRVNUT1JFX1RBUkdFVCBpcyByZXF1aXJlZCIKZmkKaWYgWyAteiAiJEJBQ0tVUF9GSUxFIiBdOyB0aGVuCiAgZmFpbCAiWENPTkZFU1NfQkFDS1VQX0ZJTEUgaXMgcmVxdWlyZWQiCmZpCgojIC0tLSBHdWFyZCAyOiBpc29sYXRpb24gKGZhaWwgc2FmZSwgbm9uLW5lZ290aWFibGUpIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIFRoZSByZXN0b3JlIHRhcmdldCBtdXN0IGJlIGFuIGlzb2xhdGVkIGVudmlyb25tZW50LiBJZiB0aGUgdGFyZ2V0IGxvb2tzIGxpa2UKIyBwcm9kdWN0aW9uLCBzdG9wIGltbWVkaWF0ZWx5IHJhdGhlciB0aGFuIHJpc2sgYW4gb3ZlcndyaXRlLgpjYXNlICIkVEFSR0VUIiBpbgogICoiJFBST0RfTUFSS0VSIiopCiAgICBmYWlsICJyZXN0b3JlIHRhcmdldCBhcHBlYXJzIHRvIGJlIHByb2R1Y3Rpb247IHJlZnVzaW5nIHRvIGNvbnRpbnVlIgogICAgOzsKZXNhYwoKIyAtLS0gR3VhcmQgMzogYmFja3VwIGFydGlmYWN0IG11c3QgZXhpc3QgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQppZiBbICEgLWYgIiRCQUNLVVBfRklMRSIgXTsgdGhlbgogIGZhaWwgImJhY2t1cCBmaWxlIG5vdCBmb3VuZDogJEJBQ0tVUF9GSUxFIgpmaQoKc3RhcnRfbXM9JChkYXRlICslcyUzTiAyPi9kZXYvbnVsbCB8fCBkYXRlICslczAwMCkKCmxvZyAicmVzdG9yaW5nIGJhY2t1cCBpbnRvIGlzb2xhdGVkIHRhcmdldCIKaWYgISAiJFBHX1JFU1RPUkUiIC0tbm8tb3duZXIgLS1jbGVhbiAtLWRibmFtZSAiJFRBUkdFVCIgIiRCQUNLVVBfRklMRSIgPi9kZXYvbnVsbCAyPiYxOyB0aGVuCiAgZmFpbCAicGdfcmVzdG9yZSBmYWlsZWQgZm9yIHRhcmdldCAkVEFSR0VUIgpmaQoKbG9nICJydW5uaW5nIGludGVncml0eSBjaGVja3MiCmlmICEgIiRQU1FMIiAiJFRBUkdFVCIgLWMgIlNFTEVDVCAxOyIgPi9kZXYvbnVsbCAyPiYxOyB0aGVuCiAgZmFpbCAiaW50ZWdyaXR5IGNoZWNrIGZhaWxlZDogY2Fubm90IHF1ZXJ5IHJlc3RvcmVkIGRhdGFiYXNlIgpmaQoKZW5kX21zPSQoZGF0ZSArJXMlM04gMj4vZGV2L251bGwgfHwgZGF0ZSArJXMwMDApCmR1cmF0aW9uX21zPSQoKGVuZF9tcyAtIHN0YXJ0X21zKSkKCiMgLS0tIFJlY29yZCBvdXRjb21lIChzYW5pdGl6ZWQ6IG5vIGNyZWRlbnRpYWxzLCBubyBjb25uZWN0aW9uIHN0cmluZ3MpIC0tLS0tLS0tCnsKICBlY2hvICJiYWNrdXBfZmlsZT0kKGJhc2VuYW1lICIkQkFDS1VQX0ZJTEUiKSIKICBlY2hvICJvdXRjb21lPXN1Y2Nlc3MiCiAgZWNobyAiZHVyYXRpb25fbXM9JGR1cmF0aW9uX21zIgogIGVjaG8gInJlc3RvcmVkX2F0PSQoZGF0ZSAtdSArJVktJW0tJWRUJUg6JU06JVNaKSIKfSA+ICIkUkVQT1JUX0ZJTEUiCgpsb2cgImRyaWxsIHBhc3NlZDsgcmVwb3J0IHdyaXR0ZW4gdG8gJFJFUE9SVF9GSUxFIgo=
+#!/usr/bin/env bash
+#
+# Scheduled PostgreSQL restore drill.
+#
+# Proves, on a schedule, that a backup can actually be restored and pass
+# integrity checks. The drill is strictly isolated: it refuses to run against
+# the production database and never overwrites production data.
+#
+# Usage:
+#   XCONFESS_RESTORE_TARGET=postgresql://user:pass@isolated-host/drill-db \
+#   XCONFESS_BACKUP_FILE=/path/to/backup.dump \
+#     bash scripts/postgres-restore-drill.sh
+#
+# Required environment variables:
+#   XCONFESS_RESTORE_TARGET  connection target (MUST be an isolated environment)
+#   XCONFESS_BACKUP_FILE     path to the backup artifact to restore
+#
+# Optional:
+#   XCONFESS_DRILL_REPORT    path to write the drill report (default: ./restore-drill-report.log)
+#   XCONFESS_PROD_MARKER     substring that marks a production target (default: "prod")
+
+set -euo pipefail
+
+REPORT_FILE="${XCONFESS_DRILL_REPORT:-./restore-drill-report.log}"
+PROD_MARKER="${XCONFESS_PROD_MARKER:-prod}"
+
+log() {
+  echo "[restore-drill] $*"
+}
+
+fail() {
+  log "ERROR: $*" >&2
+  echo "outcome=failure reason=$*" >> "$REPORT_FILE"
+  exit 1
+}
+
+# Resolve pg_restore and psql, honoring an override for tests.
+PG_RESTORE="${XCONFESS_PG_RESTORE:-pg_restore}"
+PSQL="${XCONFESS_PSQL:-psql}"
+
+TARGET="${XCONFESS_RESTORE_TARGET:-}"
+BACKUP_FILE="${XCONFESS_BACKUP_FILE:-}"
+
+# --- Guard 1: required inputs -------------------------------------------------
+if [ -z "$TARGET" ]; then
+  fail "XCONFESS_RESTORE_TARGET is required"
+fi
+if [ -z "$BACKUP_FILE" ]; then
+  fail "XCONFESS_BACKUP_FILE is required"
+fi
+
+# --- Guard 2: isolation (fail safe, non-negotiable) ---------------------------
+# The restore target must be an isolated environment. If the target looks like
+# production, stop immediately rather than risk an overwrite.
+case "$TARGET" in
+  *"$PROD_MARKER"*)
+    fail "restore target appears to be production; refusing to continue"
+    ;;
+esac
+
+# --- Guard 3: backup artifact must exist -------------------------------------
+if [ ! -f "$BACKUP_FILE" ]; then
+  fail "backup file not found: $BACKUP_FILE"
+fi
+
+start_ms=$(date +%s%3N 2>/dev/null || date +%s000)
+
+log "restoring backup into isolated target"
+if ! "$PG_RESTORE" --no-owner --clean --dbname "$TARGET" "$BACKUP_FILE" >/dev/null 2>&1; then
+  fail "pg_restore failed for target $TARGET"
+fi
+
+log "running integrity checks"
+if ! "$PSQL" "$TARGET" -c "SELECT 1;" >/dev/null 2>&1; then
+  fail "integrity check failed: cannot query restored database"
+fi
+
+end_ms=$(date +%s%3N 2>/dev/null || date +%s000)
+duration_ms=$((end_ms - start_ms))
+
+# --- Record outcome (sanitized: no credentials, no connection strings) --------
+{
+  echo "backup_file=$(basename "$BACKUP_FILE")"
+  echo "outcome=success"
+  echo "duration_ms=$duration_ms"
+  echo "restored_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+} > "$REPORT_FILE"
+
+log "drill passed; report written to $REPORT_FILE"

@@ -1,1 +1,156 @@
-IyEvdXNyL2Jpbi9lbnYgYmFzaAoKc2V0IC1ldW8gcGlwZWZhaWwKClRFU1RfRElSPSIkKGNkICIkKGRpcm5hbWUgIiR7QkFTSF9TT1VSQ0VbMF19IikiICYmIHB3ZCkiClJFUE9fUk9PVD0iJHtURVNUX0RJUn0vLi4iClNDUklQVF9QQVRIPSIkUkVQT19ST09UL3Bvc3RncmVzLXJlc3RvcmUtZHJpbGwuc2giCgojIEhlbHBlcjogY3JlYXRlIGEgdGVtcG9yYXJ5IHNhbmRib3ggd2l0aCBhIGZha2UgcGdfcmVzdG9yZS9wc3FsLgpzZXR1cF90ZXN0X2VudigpIHsKICBsb2NhbCB0bXBkaXIKICB0bXBkaXI9JChta3RlbXAgLWQpCiAgdHJhcCAicm0gLXJmICR0bXBkaXIiIEVYSVQKCiAgIyBGYWtlIGJpbmFyaWVzIHRoYXQgc3VjY2VlZCBieSBkZWZhdWx0LgogIGNhdCA+ICIkdG1wZGlyL3BnX3Jlc3RvcmUiIDw8J0VPRicKIyEvdXNyL2Jpbi9lbnYgYmFzaApleGl0IDAKRU9GCiAgY2F0ID4gIiR0bXBkaXIvcHNxbCIgPDwnRU9GJwojIS91c3IvYmluL2VudiBiYXNoCmV4aXQgMApFT0YKICBjaG1vZCAreCAiJHRtcGRpci9wZ19yZXN0b3JlIiAiJHRtcGRpci9wc3FsIgoKICBlY2hvICJvayIgPiAiJHRtcGRpci9iYWNrdXAuZHVtcCIKICBlY2hvICIkdG1wZGlyIgp9CgojIFRlc3QgMTogcmVmdXNlcyB0byBydW4gYWdhaW5zdCBhIHByb2R1Y3Rpb24tbG9va2luZyB0YXJnZXQuCnRlc3RfcmVmdXNlc19wcm9kdWN0aW9uX3RhcmdldCgpIHsKICBsb2NhbCB0bXBkaXIKICB0bXBkaXI9JChzZXR1cF90ZXN0X2VudikKCiAgbG9jYWwgb3V0cHV0CiAgb3V0cHV0PSQoWENPTkZFU1NfUEdfUkVTVE9SRT0iJHRtcGRpci9wZ19yZXN0b3JlIiBcCiAgICAgICAgICAgWENPTkZFU1NfUFNRTD0iJHRtcGRpci9wc3FsIiBcCiAgICAgICAgICAgWENPTkZFU1NfUkVTVE9SRV9UQVJHRVQ9InBvc3RncmVzcWw6Ly9kYi5wcm9kLmV4YW1wbGUuY29tL2xpdmUiIFwKICAgICAgICAgICBYQ09ORkVTU19CQUNLVVBfRklMRT0iJHRtcGRpci9iYWNrdXAuZHVtcCIgXAogICAgICAgICAgIFhDT05GRVNTX0RSSUxMX1JFUE9SVD0iJHRtcGRpci9yZXBvcnQubG9nIiBcCiAgICAgICAgICAgYmFzaCAiJFNDUklQVF9QQVRIIiAyPiYxIHx8IHRydWUpCgogIGlmIGVjaG8gIiRvdXRwdXQiIHwgZ3JlcCAtcSAicmVmdXNpbmcgdG8gY29udGludWUiOyB0aGVuCiAgICBlY2hvICJQQVNTOiBwcm9kdWN0aW9uIHRhcmdldCByZWZ1c2VkIgogIGVsc2UKICAgIGVjaG8gIkZBSUw6IHByb2R1Y3Rpb24gdGFyZ2V0IHdhcyBub3QgcmVmdXNlZCIKICAgIGVjaG8gIk91dHB1dCB3YXM6ICRvdXRwdXQiCiAgICByZXR1cm4gMQogIGZpCn0KCiMgVGVzdCAyOiBmYWlscyBmYXN0IHdoZW4gdGhlIHJlc3RvcmUgdGFyZ2V0IGlzIG1pc3NpbmcuCnRlc3RfcmVxdWlyZXNfcmVzdG9yZV90YXJnZXQoKSB7CiAgbG9jYWwgdG1wZGlyCiAgdG1wZGlyPSQoc2V0dXBfdGVzdF9lbnYpCgogIGxvY2FsIG91dHB1dAogIG91dHB1dD0kKFhDT05GRVNTX1BHX1JFU1RPUkU9IiR0bXBkaXIvcGdfcmVzdG9yZSIgXAogICAgICAgICAgIFhDT05GRVNTX1BTUUw9IiR0bXBkaXIvcHNxbCIgXAogICAgICAgICAgIFhDT05GRVNTX0JBQ0tVUF9GSUxFPSIkdG1wZGlyL2JhY2t1cC5kdW1wIiBcCiAgICAgICAgICAgWENPTkZFU1NfRFJJTExfUkVQT1JUPSIkdG1wZGlyL3JlcG9ydC5sb2ciIFwKICAgICAgICAgICBiYXNoICIkU0NSSVBUX1BBVEgiIDI+JjEgfHwgdHJ1ZSkKCiAgaWYgZWNobyAiJG91dHB1dCIgfCBncmVwIC1xICJYQ09ORkVTU19SRVNUT1JFX1RBUkdFVCBpcyByZXF1aXJlZCI7IHRoZW4KICAgIGVjaG8gIlBBU1M6IG1pc3NpbmcgdGFyZ2V0IHJlcG9ydGVkIgogIGVsc2UKICAgIGVjaG8gIkZBSUw6IG1pc3NpbmcgdGFyZ2V0IG5vdCByZXBvcnRlZCIKICAgIGVjaG8gIk91dHB1dCB3YXM6ICRvdXRwdXQiCiAgICByZXR1cm4gMQogIGZpCn0KCiMgVGVzdCAzOiBmYWlscyB3aGVuIHRoZSBiYWNrdXAgYXJ0aWZhY3QgZG9lcyBub3QgZXhpc3QuCnRlc3RfcmVxdWlyZXNfYmFja3VwX2ZpbGUoKSB7CiAgbG9jYWwgdG1wZGlyCiAgdG1wZGlyPSQoc2V0dXBfdGVzdF9lbnYpCgogIGxvY2FsIG91dHB1dAogIG91dHB1dD0kKFhDT05GRVNTX1BHX1JFU1RPUkU9IiR0bXBkaXIvcGdfcmVzdG9yZSIgXAogICAgICAgICAgIFhDT05GRVNTX1BTUUw9IiR0bXBkaXIvcHNxbCIgXAogICAgICAgICAgIFhDT05GRVNTX1JFU1RPUkVfVEFSR0VUPSJwb3N0Z3Jlc3FsOi8vaXNvbGF0ZWQvZHJpbGwiIFwKICAgICAgICAgICBYQ09ORkVTU19CQUNLVVBfRklMRT0iJHRtcGRpci9taXNzaW5nLmR1bXAiIFwKICAgICAgICAgICBYQ09ORkVTU19EUklMTF9SRVBPUlQ9IiR0bXBkaXIvcmVwb3J0LmxvZyIgXAogICAgICAgICAgIGJhc2ggIiRTQ1JJUFRfUEFUSCIgMj4mMSB8fCB0cnVlKQoKICBpZiBlY2hvICIkb3V0cHV0IiB8IGdyZXAgLXEgImJhY2t1cCBmaWxlIG5vdCBmb3VuZCI7IHRoZW4KICAgIGVjaG8gIlBBU1M6IG1pc3NpbmcgYmFja3VwIHJlcG9ydGVkIgogIGVsc2UKICAgIGVjaG8gIkZBSUw6IG1pc3NpbmcgYmFja3VwIG5vdCByZXBvcnRlZCIKICAgIGVjaG8gIk91dHB1dCB3YXM6ICRvdXRwdXQiCiAgICByZXR1cm4gMQogIGZpCn0KCiMgVGVzdCA0OiByZWNvcmRzIGEgc2FuaXRpemVkIHN1Y2Nlc3MgcmVwb3J0IHdpdGhvdXQgY3JlZGVudGlhbHMuCnRlc3RfcmVjb3Jkc19zYW5pdGl6ZWRfcmVwb3J0KCkgewogIGxvY2FsIHRtcGRpcgogIHRtcGRpcj0kKHNldHVwX3Rlc3RfZW52KQoKICBYQ09ORkVTU19QR19SRVNUT1JFPSIkdG1wZGlyL3BnX3Jlc3RvcmUiIFwKICAgIFhDT05GRVNTX1BTUUw9IiR0bXBkaXIvcHNxbCIgXAogICAgWENPTkZFU1NfUkVTVE9SRV9UQVJHRVQ9InBvc3RncmVzcWw6Ly9pc29sYXRlZC9kcmlsbCIgXAogICAgWENPTkZFU1NfQkFDS1VQX0ZJTEU9IiR0bXBkaXIvYmFja3VwLmR1bXAiIFwKICAgIFhDT05GRVNTX0RSSUxMX1JFUE9SVD0iJHRtcGRpci9yZXBvcnQubG9nIiBcCiAgICBiYXNoICIkU0NSSVBUX1BBVEgiID4vZGV2L251bGwgMj4mMQoKICBpZiBncmVwIC1xICJvdXRjb21lPXN1Y2Nlc3MiICIkdG1wZGlyL3JlcG9ydC5sb2ciOyB0aGVuCiAgICBlY2hvICJQQVNTOiBzdWNjZXNzIHJlY29yZGVkIgogIGVsc2UKICAgIGVjaG8gIkZBSUw6IHN1Y2Nlc3Mgbm90IHJlY29yZGVkIgogICAgcmV0dXJuIDEKICBmaQoKICAjIFRoZSByZXBvcnQgbXVzdCBub3QgbGVhayB0aGUgY29ubmVjdGlvbiBzdHJpbmcuCiAgaWYgZ3JlcCAtcSAicG9zdGdyZXNxbDovLyIgIiR0bXBkaXIvcmVwb3J0LmxvZyI7IHRoZW4KICAgIGVjaG8gIkZBSUw6IHJlcG9ydCBsZWFrZWQgYSBjb25uZWN0aW9uIHN0cmluZyIKICAgIHJldHVybiAxCiAgZmkKICBlY2hvICJQQVNTOiByZXBvcnQgaXMgc2FuaXRpemVkIChubyBjb25uZWN0aW9uIHN0cmluZykiCn0KCiMgVGVzdCA1OiBwcm9wYWdhdGVzIGEgcmVzdG9yZSBmYWlsdXJlLgp0ZXN0X3Byb3BhZ2F0ZXNfcmVzdG9yZV9mYWlsdXJlKCkgewogIGxvY2FsIHRtcGRpcgogIHRtcGRpcj0kKHNldHVwX3Rlc3RfZW52KQoKICBjYXQgPiAiJHRtcGRpci9wZ19yZXN0b3JlIiA8PCdFT0YnCiMhL3Vzci9iaW4vZW52IGJhc2gKZXhpdCAxCkVPRgogIGNobW9kICt4ICIkdG1wZGlyL3BnX3Jlc3RvcmUiCgogIGxvY2FsIG91dHB1dAogIG91dHB1dD0kKFhDT05GRVNTX1BHX1JFU1RPUkU9IiR0bXBkaXIvcGdfcmVzdG9yZSIgXAogICAgICAgICAgIFhDT05GRVNTX1BTUUw9IiR0bXBkaXIvcHNxbCIgXAogICAgICAgICAgIFhDT05GRVNTX1JFU1RPUkVfVEFSR0VUPSJwb3N0Z3Jlc3FsOi8vaXNvbGF0ZWQvZHJpbGwiIFwKICAgICAgICAgICBYQ09ORkVTU19CQUNLVVBfRklMRT0iJHRtcGRpci9iYWNrdXAuZHVtcCIgXAogICAgICAgICAgIFhDT05GRVNTX0RSSUxMX1JFUE9SVD0iJHRtcGRpci9yZXBvcnQubG9nIiBcCiAgICAgICAgICAgYmFzaCAiJFNDUklQVF9QQVRIIiAyPiYxIHx8IHRydWUpCgogIGlmIGVjaG8gIiRvdXRwdXQiIHwgZ3JlcCAtcSAicGdfcmVzdG9yZSBmYWlsZWQiOyB0aGVuCiAgICBlY2hvICJQQVNTOiByZXN0b3JlIGZhaWx1cmUgcHJvcGFnYXRlZCIKICBlbHNlCiAgICBlY2hvICJGQUlMOiByZXN0b3JlIGZhaWx1cmUgbm90IHByb3BhZ2F0ZWQiCiAgICBlY2hvICJPdXRwdXQgd2FzOiAkb3V0cHV0IgogICAgcmV0dXJuIDEKICBmaQp9CgplY2hvICJSdW5uaW5nIHBvc3RncmVzIHJlc3RvcmUgZHJpbGwgdmFsaWRhdGlvbiB0ZXN0cy4uLiIKdGVzdF9yZWZ1c2VzX3Byb2R1Y3Rpb25fdGFyZ2V0CnRlc3RfcmVxdWlyZXNfcmVzdG9yZV90YXJnZXQKdGVzdF9yZXF1aXJlc19iYWNrdXBfZmlsZQp0ZXN0X3JlY29yZHNfc2FuaXRpemVkX3JlcG9ydAp0ZXN0X3Byb3BhZ2F0ZXNfcmVzdG9yZV9mYWlsdXJlCmVjaG8gIkFsbCB0ZXN0cyBwYXNzZWQiCg==
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${TEST_DIR}/.."
+SCRIPT_PATH="$REPO_ROOT/postgres-restore-drill.sh"
+
+# Helper: create a temporary sandbox with a fake pg_restore/psql.
+setup_test_env() {
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  trap "rm -rf $tmpdir" EXIT
+
+  # Fake binaries that succeed by default.
+  cat > "$tmpdir/pg_restore" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+  cat > "$tmpdir/psql" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+  chmod +x "$tmpdir/pg_restore" "$tmpdir/psql"
+
+  echo "ok" > "$tmpdir/backup.dump"
+  echo "$tmpdir"
+}
+
+# Test 1: refuses to run against a production-looking target.
+test_refuses_production_target() {
+  local tmpdir
+  tmpdir=$(setup_test_env)
+
+  local output
+  output=$(XCONFESS_PG_RESTORE="$tmpdir/pg_restore" \
+           XCONFESS_PSQL="$tmpdir/psql" \
+           XCONFESS_RESTORE_TARGET="postgresql://db.prod.example.com/live" \
+           XCONFESS_BACKUP_FILE="$tmpdir/backup.dump" \
+           XCONFESS_DRILL_REPORT="$tmpdir/report.log" \
+           bash "$SCRIPT_PATH" 2>&1 || true)
+
+  if echo "$output" | grep -q "refusing to continue"; then
+    echo "PASS: production target refused"
+  else
+    echo "FAIL: production target was not refused"
+    echo "Output was: $output"
+    return 1
+  fi
+}
+
+# Test 2: fails fast when the restore target is missing.
+test_requires_restore_target() {
+  local tmpdir
+  tmpdir=$(setup_test_env)
+
+  local output
+  output=$(XCONFESS_PG_RESTORE="$tmpdir/pg_restore" \
+           XCONFESS_PSQL="$tmpdir/psql" \
+           XCONFESS_BACKUP_FILE="$tmpdir/backup.dump" \
+           XCONFESS_DRILL_REPORT="$tmpdir/report.log" \
+           bash "$SCRIPT_PATH" 2>&1 || true)
+
+  if echo "$output" | grep -q "XCONFESS_RESTORE_TARGET is required"; then
+    echo "PASS: missing target reported"
+  else
+    echo "FAIL: missing target not reported"
+    echo "Output was: $output"
+    return 1
+  fi
+}
+
+# Test 3: fails when the backup artifact does not exist.
+test_requires_backup_file() {
+  local tmpdir
+  tmpdir=$(setup_test_env)
+
+  local output
+  output=$(XCONFESS_PG_RESTORE="$tmpdir/pg_restore" \
+           XCONFESS_PSQL="$tmpdir/psql" \
+           XCONFESS_RESTORE_TARGET="postgresql://isolated/drill" \
+           XCONFESS_BACKUP_FILE="$tmpdir/missing.dump" \
+           XCONFESS_DRILL_REPORT="$tmpdir/report.log" \
+           bash "$SCRIPT_PATH" 2>&1 || true)
+
+  if echo "$output" | grep -q "backup file not found"; then
+    echo "PASS: missing backup reported"
+  else
+    echo "FAIL: missing backup not reported"
+    echo "Output was: $output"
+    return 1
+  fi
+}
+
+# Test 4: records a sanitized success report without credentials.
+test_records_sanitized_report() {
+  local tmpdir
+  tmpdir=$(setup_test_env)
+
+  XCONFESS_PG_RESTORE="$tmpdir/pg_restore" \
+    XCONFESS_PSQL="$tmpdir/psql" \
+    XCONFESS_RESTORE_TARGET="postgresql://isolated/drill" \
+    XCONFESS_BACKUP_FILE="$tmpdir/backup.dump" \
+    XCONFESS_DRILL_REPORT="$tmpdir/report.log" \
+    bash "$SCRIPT_PATH" >/dev/null 2>&1
+
+  if grep -q "outcome=success" "$tmpdir/report.log"; then
+    echo "PASS: success recorded"
+  else
+    echo "FAIL: success not recorded"
+    return 1
+  fi
+
+  # The report must not leak the connection string.
+  if grep -q "postgresql://" "$tmpdir/report.log"; then
+    echo "FAIL: report leaked a connection string"
+    return 1
+  fi
+  echo "PASS: report is sanitized (no connection string)"
+}
+
+# Test 5: propagates a restore failure.
+test_propagates_restore_failure() {
+  local tmpdir
+  tmpdir=$(setup_test_env)
+
+  cat > "$tmpdir/pg_restore" <<'EOF'
+#!/usr/bin/env bash
+exit 1
+EOF
+  chmod +x "$tmpdir/pg_restore"
+
+  local output
+  output=$(XCONFESS_PG_RESTORE="$tmpdir/pg_restore" \
+           XCONFESS_PSQL="$tmpdir/psql" \
+           XCONFESS_RESTORE_TARGET="postgresql://isolated/drill" \
+           XCONFESS_BACKUP_FILE="$tmpdir/backup.dump" \
+           XCONFESS_DRILL_REPORT="$tmpdir/report.log" \
+           bash "$SCRIPT_PATH" 2>&1 || true)
+
+  if echo "$output" | grep -q "pg_restore failed"; then
+    echo "PASS: restore failure propagated"
+  else
+    echo "FAIL: restore failure not propagated"
+    echo "Output was: $output"
+    return 1
+  fi
+}
+
+echo "Running postgres restore drill validation tests..."
+test_refuses_production_target
+test_requires_restore_target
+test_requires_backup_file
+test_records_sanitized_report
+test_propagates_restore_failure
+echo "All tests passed"
