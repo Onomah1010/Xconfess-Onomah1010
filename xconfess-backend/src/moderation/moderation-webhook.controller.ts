@@ -37,6 +37,35 @@ interface WebhookPayload {
   timestamp: string;
 }
 
+/** SHA-256 HMACs are rendered as 64 lowercase/uppercase hex characters. */
+const HMAC_SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/i;
+
+/**
+ * Compares a supplied hex signature with the expected one in constant time.
+ *
+ * Both inputs are copied into equally sized buffers before
+ * `crypto.timingSafeEqual` runs, so an attacker cannot learn the expected
+ * signature length (or how many characters matched) from the comparison time.
+ * The length equality check is folded into the result *after* the constant-time
+ * comparison rather than returning early.
+ */
+function constantTimeSignatureEquals(
+  provided: string,
+  expected: string,
+): boolean {
+  const providedBuffer = Buffer.from(provided, 'utf8');
+  const expectedBuffer = Buffer.from(expected, 'utf8');
+  const maxLength = Math.max(providedBuffer.length, expectedBuffer.length, 1);
+
+  const providedPadded = Buffer.alloc(maxLength);
+  const expectedPadded = Buffer.alloc(maxLength);
+  providedBuffer.copy(providedPadded);
+  expectedBuffer.copy(expectedPadded);
+
+  const equal = crypto.timingSafeEqual(providedPadded, expectedPadded);
+  return equal && providedBuffer.length === expectedBuffer.length;
+}
+
 /**
  * Parses a timestamped HMAC signature header.
  * Expected format: "t=<unix_timestamp>,v1=<hmac_hex>"
@@ -354,6 +383,11 @@ export class ModerationWebhookController {
    * Verifies a timestamped HMAC signature.
    * The signed message is "<timestamp>.<payload>" to bind the timestamp
    * cryptographically to the request body, preventing timestamp tampering.
+   *
+   * The comparison itself is constant-time: malformed (non-hex / wrong-length)
+   * signatures are rejected through a format flag rather than an early return,
+   * so the time taken is independent of how close the supplied value is to the
+   * expected signature.
    */
   private verifyTimestampedSignature(
     timestamp: string,
@@ -370,14 +404,12 @@ export class ModerationWebhookController {
       .update(signedMessage)
       .digest('hex');
 
-    if (signature.length !== expectedSignature.length) {
-      return false;
-    }
+    // The format check only inspects caller-supplied data; the expected value
+    // is never used to short-circuit verification.
+    const wellFormed = HMAC_SHA256_HEX_PATTERN.test(signature);
+    const matches = constantTimeSignatureEquals(signature, expectedSignature);
 
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature),
-    );
+    return wellFormed && matches;
   }
 
   /**

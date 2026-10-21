@@ -12,3 +12,7 @@ cursor are not included in subsequent pages; restart the feed to see them. A
 new confession that sorts below the cursor may appear on a later page. Legacy
 offset pagination is not insertion-stable: new rows ahead of an offset can move
 page boundaries, so clients needing stable continuation should use cursors.
+
+Legacy offset requests (`?page=`) return `Deprecation`, `Sunset` and `Link`
+response headers so clients can detect the change before the mode is removed;
+see `docs/API_INTEGRATION.md` (Deprecation headers).

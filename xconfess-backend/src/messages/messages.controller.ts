@@ -18,6 +18,7 @@ import { CreateMessageDto, ReplyMessageDto } from './dto/message.dto';
 import { GetMessagesQueryDto } from './dto/get-messages-query.dto';
 import { RateLimitGuard } from '../auth/guard/rate-limit.guard';
 import { RateLimit } from '../auth/guard/rate-limit.decorator';
+import { DeprecatedApi } from '../common/decorators/deprecated-api.decorator';
 
 @Controller('messages')
 @UseGuards(JwtAuthGuard)
@@ -68,8 +69,16 @@ export class MessagesController {
    * Verify the requester is a participant in the thread — not just authenticated.
    * Supports cursor-based pagination via `cursor`/`limit` query params so large
    * threads never return an unbounded history in a single response.
+   * `?page=` remains available but is deprecated in favour of cursors.
    */
   @Get('thread/:threadId')
+  @DeprecatedApi({
+    deprecatedAt: '2026-10-21',
+    sunsetAt: '2027-04-30',
+    successor: '/api/messages/thread/:threadId',
+    guidance: 'Use cursor pagination (?cursor=...&limit=...) instead of ?page=.',
+    legacyQueryParam: 'page',
+  })
   async getThread(
     @Param('threadId') threadId: string,
     @Query() query: GetMessagesQueryDto,
