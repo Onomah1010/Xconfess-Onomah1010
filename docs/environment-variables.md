@@ -95,9 +95,9 @@ feature-flag matrix.
 | Variable | Format / example (fake) | Secret? | Purpose |
 |----------|-------------------------|:-------:|---------|
 | `STELLAR_FEATURES_ENABLED` | `false` | No | Master switch for on-chain features. |
-| `STELLAR_NETWORK` | `testnet` | No | `testnet` or `mainnet`. |
-| `STELLAR_HORIZON_URL` | `https://horizon-testnet.stellar.org` | No | Horizon endpoint. |
-| `STELLAR_SOROBAN_RPC_URL` | `https://soroban-rpc-testnet.stellar.org` | No | Soroban RPC endpoint. |
+| `STELLAR_NETWORK` | `testnet` | No | `testnet` or `mainnet`; must match deployment metadata. |
+| `STELLAR_HORIZON_URL` | `https://horizon-testnet.stellar.org` | No | Horizon endpoint for the selected network. Testnet must use `horizon-testnet.stellar.org`; mainnet must use `horizon.stellar.org`. |
+| `STELLAR_SOROBAN_RPC_URL` | `https://soroban-rpc-testnet.stellar.org` | No | Soroban RPC endpoint for the selected network. Testnet must use `soroban-rpc-testnet.stellar.org`; mainnet must use `soroban-rpc.mainnet.stellar.org`. |
 | `CONFESSION_ANCHOR_CONTRACT_ID` | `C...` (public key) | No | Anchor contract ID. |
 | `REPUTATION_BADGES_CONTRACT_ID` | `C...` (public key) | No | Reputation contract ID. |
 | `TIPPING_SYSTEM_CONTRACT_ID` | `C...` (public key) | No | Tipping contract ID. |

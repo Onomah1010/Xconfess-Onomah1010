@@ -144,8 +144,33 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm install --global npm@10.9.3
       - run: npm ci --include=optional --no-audit --no-fund
+      - name: Wait for PostgreSQL and Redis health
+        run: npm run services:wait
+        env:
+          SERVICE_WAIT_TIMEOUT_MS: 60000
       - run: npm run backend:test:critical-coverage
       - run: npm run frontend:env:test
+      - name: Start backend for API contract drift check
+        shell: bash
+        run: |
+          npm run backend:build
+          npm run start:backend > backend-api-contract.log 2>&1 &
+          echo $! > backend-api-contract.pid
+      - name: Validate frontend proxies against backend OpenAPI
+        shell: bash
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:5000/api/health/live >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat backend-api-contract.log
+              exit 1
+            fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1:5000/api/docs-json > openapi.json
+          npm run api:contract-drift -- --spec="$PWD/openapi.json"
       - run: npx playwright install --with-deps chromium
       - run: npm run frontend:test:a11y
       - run: npm run ci:apps
@@ -173,6 +198,12 @@ jobs:
       - run: cargo test --workspace
       - name: Check contract ABI drift
         run: bash scripts/check-abi-drift.sh
+      - name: Check contract upgrade compatibility checklist
+        working-directory: ${{ github.workspace }}
+        run: npm run contracts:compatibility
+      - name: Test contract quality gates
+        working-directory: ${{ github.workspace }}
+        run: npm run contracts:quality-tests
       - name: Rebuild WASM and verify release manifest
         working-directory: .
         run: bash scripts/contracts-release.sh check
