@@ -20,6 +20,7 @@ import {
 } from "@/app/lib/api/confessionCache";
 import { queryKeys } from "@/app/lib/api/queryKeys";
 import type { Comment } from "@/app/lib/types/confession";
+import { AppError } from "@/app/lib/utils/errorHandler";
 
 const DEFAULT_LIMIT = 10;
 
@@ -139,7 +140,12 @@ export function useCreateCommentMutation(confessionId: string) {
       const result = await createComment(confessionId, variables);
 
       if (!result.ok) {
-        throw new Error(result.error.message);
+        throw new AppError(
+          result.error.message,
+          result.error.code ?? 'REQUEST_FAILED',
+          result.error.status ?? 500,
+          result.error.retryAfter != null ? { retryAfter: result.error.retryAfter } : undefined,
+        );
       }
 
       return result.data;

@@ -231,6 +231,7 @@ export default function MessagesPage() {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const isSendingRef = useRef(false);
   const [threadsError, setThreadsError] = useState<string | null>(null);
   const [messagesError, setMessagesError] = useState<string | null>(null);
   const [showMobileList, setShowMobileList] = useState(true);
@@ -393,6 +394,9 @@ export default function MessagesPage() {
 
   const handleSendMessage = async () => {
     if (!selectedThread || !newMessage.trim() || !e2eReady) return;
+    // Synchronous re-entry guard: state updates are batched by React and may
+    // lag behind a rapid second Enter-key press before the UI re-renders.
+    if (isSendingRef.current) return;
     if (!selectedThread.authorAnonymousUserId) {
       toast.error('Cannot encrypt: missing author identity for this thread.');
       return;
@@ -400,6 +404,7 @@ export default function MessagesPage() {
 
     const text = newMessage;
     try {
+      isSendingRef.current = true;
       setIsSending(true);
       const threadCtx = {
         confessionId: selectedThread.confessionId,
@@ -434,6 +439,7 @@ export default function MessagesPage() {
       console.error('Failed to send message:', error);
       toast.error('Failed to send encrypted message. Ensure both participants have E2E keys.');
     } finally {
+      isSendingRef.current = false;
       setIsSending(false);
     }
   };
@@ -712,14 +718,21 @@ export default function MessagesPage() {
                 )}
               </ScrollArea>
               <div className="p-2 sm:p-3 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+                {!isConnected && (
+                  <p className="text-[11px] text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1" role="status" aria-live="polite">
+                    <WifiOffIcon className="w-3 h-3 flex-shrink-0" aria-hidden />
+                    {isReconnecting ? 'Reconnecting…' : 'Offline — messages may not deliver.'}
+                  </p>
+                )}
                 <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                   <Input
                     ref={inputRef}
                     placeholder={selectedThread.isAuthor ? 'Type an encrypted reply...' : 'Send encrypted message...'}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
                     disabled={isSending || !e2eReady}
+                    aria-label={selectedThread.isAuthor ? 'Type an encrypted reply' : 'Send encrypted message'}
                     className="min-w-0 flex-1 text-sm"
                   />
                   <Button className="shrink-0" onClick={handleSendMessage} disabled={isSending || !newMessage.trim() || !e2eReady} size="sm">
@@ -922,13 +935,20 @@ export default function MessagesPage() {
                 </ScrollArea>
 
                 <div className="p-3 sm:p-4 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+                  {!isConnected && (
+                    <p className="text-[11px] text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1" role="status" aria-live="polite">
+                      <WifiOffIcon className="w-3 h-3 flex-shrink-0" aria-hidden />
+                      {isReconnecting ? 'Reconnecting — messages will send when connection is restored.' : 'You are offline. Messages will not be delivered until reconnected.'}
+                    </p>
+                  )}
                   <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                     <Input
                       placeholder={selectedThread.isAuthor ? 'Type an encrypted reply...' : 'Send encrypted message...'}
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
                       disabled={isSending || !e2eReady}
+                      aria-label={selectedThread.isAuthor ? 'Type an encrypted reply' : 'Send encrypted message'}
                       className="min-w-0 flex-1"
                     />
                     <Button className="shrink-0" onClick={handleSendMessage} disabled={isSending || !newMessage.trim() || !e2eReady}>
