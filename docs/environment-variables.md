@@ -46,6 +46,7 @@ process with an actionable error.
 | `APP_ENV` | — | No | Alternate environment label. |
 | `PORT` | `3000` | No | Backend HTTP port (compose/README use `5000`). |
 | `FRONTEND_URL` | `http://localhost:3000` | No | Allowed CORS/WebSocket origin. |
+| `CORS_ALLOWED_ORIGINS` | falls back to `FRONTEND_URL` | No | Comma-separated browser origins allowed to make credentialed API requests. Wildcards (`*`) are rejected at startup. |
 | `BACKEND_URL` | — | No | Public backend URL (used in links/emails). |
 | `DB_READ_HOST` / `DB_READ_PORT` | falls back to primary | No | Read-replica host/port. |
 | `DB_READ_REPLICAS` | `1` | No | Read-replica count for pool sizing. |

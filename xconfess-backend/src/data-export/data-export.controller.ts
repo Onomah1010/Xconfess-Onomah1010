@@ -5,7 +5,6 @@ import {
   Query,
   Res,
   UnauthorizedException,
-  BadRequestException,
   GoneException,
   NotFoundException,
   Post,
@@ -243,8 +242,10 @@ export class DataExportController {
 
     const exportReq = await this.exportService.getExportFile(id, userId);
 
+    // Unknown, expired, and other users' exports share the same 404 response so
+    // this endpoint never reveals whether an export exists.
     if (!exportReq || (!exportReq.fileData && !exportReq.isChunked)) {
-      throw new BadRequestException('File not found or expired.');
+      throw new NotFoundException('Export not found or expired');
     }
 
     if (exportReq.isChunked) {
@@ -263,7 +264,7 @@ export class DataExportController {
     }
 
     if (!exportReq.fileData) {
-      throw new BadRequestException('File not found or expired.');
+      throw new NotFoundException('Export not found or expired');
     }
 
     // 5. Stream single file

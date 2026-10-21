@@ -415,7 +415,9 @@ export class MessagesService {
     const anonIds = userAnons.map((ua) => ua.anonymousUserId);
     const confessionAuthorId = message.confession?.anonymousUser?.id;
     if (!confessionAuthorId || !anonIds.includes(confessionAuthorId)) {
-      throw new ForbiddenException('You are not the author of this confession');
+      // Never disclose that the message exists to a caller who is not the
+      // confession author: respond exactly like an unknown message id.
+      throw new NotFoundException('Message not found');
     }
 
     // Use a transaction to ensure atomicity

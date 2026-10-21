@@ -446,7 +446,8 @@ describe('DataExportController', () => {
       });
     });
 
-    // If the service can't find the file, the controller should fail cleanly with 400.
+    // If the service can't find the file, the controller should fail cleanly with
+    // the same 404 used for other users' exports and expired artifacts.
     it('should handle missing export files gracefully', async () => {
       const futureTime = Date.now() + 60 * 60 * 1000;
       const requestId = 'req-1';
@@ -472,7 +473,38 @@ describe('DataExportController', () => {
           token,
           {} as any,
         ),
-      ).rejects.toThrow(BadRequestException);
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    // Expired artifacts are indistinguishable from unknown/foreign exports.
+    it('should return the same 404 when the artifact is not accessible', async () => {
+      const futureTime = Date.now() + 60 * 60 * 1000;
+      const requestId = 'req-other-user';
+      const userId = 'user-1';
+      const token = 'tok';
+      const { signature } = buildSingleFileParams(
+        requestId,
+        userId,
+        futureTime,
+        token,
+      );
+
+      mockExportService.getExportFile.mockResolvedValue({
+        fileData: null,
+        isChunked: false,
+      } as any);
+
+      await expect(
+        controller.download(
+          requestId,
+          userId,
+          futureTime.toString(),
+          signature,
+          undefined,
+          token,
+          {} as any,
+        ),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

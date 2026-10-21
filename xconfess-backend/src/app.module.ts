@@ -43,6 +43,7 @@ import { AttachmentModule } from './attachment/attachment.module';
 // The legacy @nestjs/bull import has been removed. All queues use BullMQ.
 import { BullModule } from '@nestjs/bullmq';
 import { StructuredLoggingInterceptor } from './common/logging/structured-logging.interceptor';
+import { DeprecationHeadersInterceptor } from './common/interceptors/deprecation-headers.interceptor';
 import { GracefulShutdownModule } from './common/graceful-shutdown.module';
 import { ObservabilityModule } from './observability/observability.module';
 import { HttpMetricsMiddleware } from './observability/http-metrics.middleware';
@@ -170,6 +171,10 @@ FeatureFlagsModule,
     {
       provide: APP_INTERCEPTOR,
       useClass: StructuredLoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DeprecationHeadersInterceptor,
     },
   ],
 })

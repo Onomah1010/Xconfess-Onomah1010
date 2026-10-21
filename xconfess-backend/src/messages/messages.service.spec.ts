@@ -366,7 +366,7 @@ describe('MessagesService', () => {
         .rejects.toThrow(BadRequestException);
     });
 
-    it('should throw ForbiddenException when user is not confession author', async () => {
+    it('should throw NotFoundException when user is not confession author', async () => {
       const message = {
         id: 1,
         hasReply: false,
@@ -377,9 +377,11 @@ describe('MessagesService', () => {
         .spyOn(userAnonRepo, 'find')
         .mockResolvedValue([{ anonymousUserId: 'unrelated-anon' }] as any);
 
+      // Behave exactly like an unknown message id so non-authors cannot probe
+      // for the existence of someone else's message.
       await expect(
         service.reply({ message_id: 1, reply: encryptedReply }, mockUser),
-      ).rejects.toThrow(ForbiddenException);
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException when message does not exist', async () => {
