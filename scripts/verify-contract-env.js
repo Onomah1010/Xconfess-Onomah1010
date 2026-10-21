@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { validateNetworkConfiguration } = require('./network-config');
 
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_DEPLOYMENT_FILE = path.join(ROOT, 'deployments', 'testnet.json');
@@ -282,13 +283,14 @@ async function main() {
   const stellarFeaturesEnabled = isTruthy(process.env.STELLAR_FEATURES_ENABLED);
   const configuredNetwork = process.env.STELLAR_NETWORK;
 
-  if (
-    configuredNetwork &&
-    rawData.network &&
-    configuredNetwork.toLowerCase() !== String(rawData.network).toLowerCase()
-  ) {
+  if (configuredNetwork || process.env.STELLAR_HORIZON_URL || process.env.STELLAR_SOROBAN_RPC_URL) {
     failures.push(
-      `STELLAR_NETWORK (${configuredNetwork}) does not match ${path.relative(ROOT, deploymentFile)} network (${rawData.network}).`,
+      ...validateNetworkConfiguration({
+        network: configuredNetwork || rawData.network,
+        deploymentNetwork: rawData.network,
+        horizonUrl: process.env.STELLAR_HORIZON_URL,
+        sorobanRpcUrl: process.env.STELLAR_SOROBAN_RPC_URL,
+      }).map((failure) => failure.replace('deployment metadata network', `${path.relative(ROOT, deploymentFile)} network`)),
     );
   }
 
@@ -349,4 +351,5 @@ module.exports = {
   readDeploymentData,
   derivePublicKeyFromSecret,
   checkHorizonTestnetAccount,
+  validateNetworkConfiguration,
 };
