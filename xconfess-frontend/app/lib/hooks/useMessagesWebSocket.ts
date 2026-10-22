@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useWebSocket, MessageWebSocketEvents } from './useWebSocket';
+import { useWebSocket, useMessageWebSocket, MessageWebSocketEvents } from './useWebSocket';
 import { useAuth } from './useAuth';
 
 interface UseMessagesWebSocketOptions {
@@ -25,7 +25,7 @@ export function useMessagesWebSocket(options: UseMessagesWebSocketOptions = {}) 
     enabled = true,
   } = options;
 
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [status, setStatus] = useState<ConnectionStatus>({
     state: 'disconnected',
     reconnectAttempts: 0,
@@ -51,42 +51,34 @@ export function useMessagesWebSocket(options: UseMessagesWebSocketOptions = {}) 
     }
   }, [onNewMessage, onNewReply, onMessageRead, onThreadUpdated]);
 
-  const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 
+  const wsUrl = process.env.NEXT_PUBLIC_WS_URL ||
     (process.env.NODE_ENV === 'development' ? 'ws://localhost:4000/socket.io' : 'wss://api.xconfess.com/socket.io');
 
-  const ws = useWebSocket({
-    url: `${wsUrl}/messages`,
-    onEvent: handleEvent,
-    onStateChange: (state) => setStatus(prev => ({ ...prev, state })),
-    reconnect: enabled && isAuthenticated,
-    maxReconnectAttempts: 10,
-    reconnectBaseDelay: 1000,
-    reconnectMaxDelay: 30000,
-    deduplicationWindowMs: 5 * 60 * 1000,
-    initialLastEventId: undefined, // Will be set after first connect
-    enabled: enabled && isAuthenticated,
-  });
+  // useMessageWebSocket maps server event types to our typed events via onMessage
+  const ws = useMessageWebSocket(
+    handleEvent,
+    {
+      url: `${wsUrl}/messages`,
+      onStateChange: useCallback((state: ConnectionStatus['state']) => {
+        setStatus(prev => ({ ...prev, state }));
+      }, []),
+      reconnect: enabled && isAuthenticated,
+      maxReconnectAttempts: 10,
+      reconnectBaseDelay: 1000,
+      reconnectMaxDelay: 30000,
+      deduplicationWindowMs: 5 * 60 * 1000,
+      enabled: enabled && isAuthenticated,
+    }
+  );
 
-  // Update reconnect attempts in status
+  // Sync reconnect attempts and lastEventId into status
   useEffect(() => {
     setStatus(prev => ({ ...prev, reconnectAttempts: ws.reconnectAttempts }));
   }, [ws.reconnectAttempts]);
 
-  // Update lastEventId in status
   useEffect(() => {
     setStatus(prev => ({ ...prev, lastEventId: ws.lastEventId }));
   }, [ws.lastEventId]);
-
-  // Handle connection state for UI visibility
-  useEffect(() => {
-    if (!enabled || !isAuthenticated) return;
-    
-    const handleStateChange = (state: ConnectionStatus['state']) => {
-      setStatus(prev => ({ ...prev, state }));
-    };
-    
-    // The onStateChange callback already handles this
-  }, [enabled, isAuthenticated]);
 
   return {
     ...ws,

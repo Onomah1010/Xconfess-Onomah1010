@@ -24,6 +24,8 @@ export interface WebSocketOptions {
   deduplicationWindowMs?: number;
   /** Passed as `lastEventId` query param on reconnect for server-side event replay. */
   initialLastEventId?: string;
+  /** When false the socket is never opened and existing connection is closed. Default true. */
+  enabled?: boolean;
 }
 
 const DEFAULT_MAX_ATTEMPTS = 10;
@@ -55,6 +57,7 @@ export function useWebSocket(options: WebSocketOptions) {
     reconnectMaxDelay = DEFAULT_MAX_DELAY,
     deduplicationWindowMs = DEFAULT_DEDUP_WINDOW,
     initialLastEventId,
+    enabled = true,
   } = options;
 
   const [state, setState] = useState<ConnectionState>('disconnected');
@@ -66,6 +69,20 @@ export function useWebSocket(options: WebSocketOptions) {
   const isMountedRef = useRef(true);
   // Event ID cache for deduplication
   const eventCacheRef = useRef<Map<string, number>>(new Map());
+
+  // Stable callback refs — updated each render so connect/handlers never
+  // need these in their dependency arrays (avoids reconnect on every render
+  // when callers pass inline functions).
+  const onMessageRef = useRef(onMessage);
+  onMessageRef.current = onMessage;
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
 
   // Clean up old event IDs from cache periodically
   useEffect(() => {
@@ -83,8 +100,8 @@ export function useWebSocket(options: WebSocketOptions) {
 
   const setConnectionState = useCallback((newState: ConnectionState) => {
     setState(newState);
-    onStateChange?.(newState);
-  }, [onStateChange]);
+    onStateChangeRef.current?.(newState);
+  }, []);
 
   const buildUrl = useCallback(() => {
     if (!lastEventIdRef.current) return url;
@@ -121,7 +138,7 @@ export function useWebSocket(options: WebSocketOptions) {
       attemptRef.current = 0;
       setReconnectAttempts(0);
       setConnectionState('connected');
-      onOpen?.();
+      onOpenRef.current?.();
     };
 
     ws.onmessage = (event) => {
@@ -134,20 +151,20 @@ export function useWebSocket(options: WebSocketOptions) {
         }
         // Deduplicate events
         if (!isDuplicateEvent(data)) {
-          onMessage?.(data, lastEventIdRef.current);
+          onMessageRef.current?.(data, lastEventIdRef.current);
         }
       } catch {
         // Non-JSON message, pass through
-        onMessage?.({ type: 'raw', payload: event.data, id: undefined }, lastEventIdRef.current);
+        onMessageRef.current?.({ type: 'raw', payload: event.data, id: undefined }, lastEventIdRef.current);
       }
     };
 
     ws.onclose = (closeEvent) => {
       if (!isMountedRef.current || wsRef.current !== ws) return;
       setConnectionState('disconnected');
-      onClose?.(closeEvent.code, closeEvent.reason);
+      onCloseRef.current?.(closeEvent.code, closeEvent.reason);
 
-      if (reconnect && attemptRef.current < maxReconnectAttempts) {
+      if (reconnect && enabled && attemptRef.current < maxReconnectAttempts) {
         attemptRef.current += 1;
         setReconnectAttempts(attemptRef.current);
         // Exponential backoff with jitter
@@ -161,20 +178,17 @@ export function useWebSocket(options: WebSocketOptions) {
 
     ws.onerror = (error) => {
       if (!isMountedRef.current || wsRef.current !== ws) return;
-      onError?.(error);
+      onErrorRef.current?.(error);
     };
 
     wsRef.current = ws;
   }, [
     buildUrl,
     reconnect,
+    enabled,
     maxReconnectAttempts,
     reconnectBaseDelay,
     reconnectMaxDelay,
-    onMessage,
-    onOpen,
-    onClose,
-    onError,
     setConnectionState,
     isDuplicateEvent,
   ]);
@@ -207,7 +221,9 @@ export function useWebSocket(options: WebSocketOptions) {
 
   useEffect(() => {
     isMountedRef.current = true;
-    connect();
+    if (enabled) {
+      connect();
+    }
     return () => {
       isMountedRef.current = false;
       if (timeoutRef.current) {
@@ -215,8 +231,9 @@ export function useWebSocket(options: WebSocketOptions) {
         timeoutRef.current = null;
       }
       wsRef.current?.close(1000, 'Component unmounted');
+      wsRef.current = null;
     };
-  }, [connect]);
+  }, [connect, enabled]);
 
   return { 
     state, 

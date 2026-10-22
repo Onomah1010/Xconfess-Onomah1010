@@ -240,6 +240,7 @@ export default function MessagesPage() {
   const [isLoadingThreads, setIsLoadingThreads] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const isSendingRef = useRef(false);
   const [threadsError, setThreadsError] = useState<string | null>(null);
   const [messagesError, setMessagesError] = useState<string | null>(null);
   const [showMobileList, setShowMobileList] = useState(true);
@@ -413,6 +414,9 @@ export default function MessagesPage() {
 
   const handleSendMessage = async () => {
     if (!selectedThread || !newMessage.trim() || !e2eReady) return;
+    // Synchronous re-entry guard: state updates are batched by React and may
+    // lag behind a rapid second Enter-key press before the UI re-renders.
+    if (isSendingRef.current) return;
     if (!selectedThread.authorAnonymousUserId) {
       toast.error('Cannot encrypt: missing author identity for this thread.');
       return;
@@ -420,6 +424,7 @@ export default function MessagesPage() {
 
     const text = newMessage;
     try {
+      isSendingRef.current = true;
       setIsSending(true);
       const threadCtx = {
         confessionId: selectedThread.confessionId,
@@ -456,6 +461,7 @@ export default function MessagesPage() {
       console.error('Failed to send message:', error);
       toast.error('Failed to send encrypted message. Ensure both participants have E2E keys.');
     } finally {
+      isSendingRef.current = false;
       setIsSending(false);
     }
   };
