@@ -10,6 +10,19 @@ import {
 } from "@/app/lib/hooks/useComments";
 import { type Comment } from "@/app/lib/types/confession";
 import { InlineError } from "@/app/components/common/InlineError";
+import { AppError } from "@/app/lib/utils/errorHandler";
+
+function getRateLimitAwareMessage(error: unknown): string {
+  if (error instanceof AppError && error.statusCode === 429) {
+    const retryAfter = typeof error.details?.retryAfter === 'number' ? error.details.retryAfter : null;
+    if (retryAfter && retryAfter > 0) {
+      const seconds = Math.ceil(retryAfter);
+      return `You are commenting too quickly. Please wait ${seconds} second${seconds === 1 ? '' : 's'} and try again.`;
+    }
+    return "You are commenting too quickly. Please wait a moment and try again.";
+  }
+  return error instanceof Error ? error.message : "Failed to post comment";
+}
 
 interface CommentSectionProps {
   confessionId: string;
@@ -103,11 +116,7 @@ export function CommentSection({
       setContent("");
       setReplyTo(null);
     } catch (mutationError) {
-      setSubmitError(
-        mutationError instanceof Error
-          ? mutationError.message
-          : "Failed to post comment",
-      );
+      setSubmitError(getRateLimitAwareMessage(mutationError));
     }
   };
 
